@@ -1,0 +1,28 @@
+services:
+  database:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - .docker/postgres:/var/lib/postgresql/data
+    networks:
+      - default
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+    ports:
+      - "15432:80"
+    depends_on:
+      - database
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

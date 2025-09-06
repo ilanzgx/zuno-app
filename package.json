@@ -1,0 +1,19 @@
+{
+  "name": "consolidador-investimentos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -k \"npm run start:api\" \"npm run start:web\"",
+    "start:web": "cd apps/web && npm run dev",
+    "start:api": "cd apps/api && mvnw spring-boot:run",
+    "maven:resolve": "cd apps/api && mvnw dependency:resolve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
