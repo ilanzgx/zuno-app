@@ -1,4 +1,23 @@
 services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    ports:
+      - "18080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_CONFIG_LOCATION=file:/app/application.properties
+    networks:
+      - default
+    volumes:
+      - ./src/main/resources/application.properties:/app/application.properties
+
   database:
     image: postgres
     ports:
@@ -7,10 +26,16 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - .docker/postgres:/var/lib/postgresql/data
     networks:
       - default
+
   pgadmin:
     image: dpage/pgadmin4
     environment:

@@ -7,7 +7,8 @@
     "dev": "concurrently -k \"npm run start:api\" \"npm run start:web\"",
     "start:web": "cd apps/web && npm run dev",
     "start:api": "cd apps/api && mvnw spring-boot:run",
-    "maven:resolve": "cd apps/api && mvnw dependency:resolve"
+    "maven:resolve": "cd apps/api && mvnw dependency:resolve",
+    "maven:build": "cd apps/api && mvnw clean install -DskipTests"
   },
   "keywords": [],
   "author": "",
