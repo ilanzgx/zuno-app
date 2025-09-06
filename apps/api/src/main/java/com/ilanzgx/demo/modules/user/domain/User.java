@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.domain.user;
+package com.ilanzgx.demo.modules.user.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
