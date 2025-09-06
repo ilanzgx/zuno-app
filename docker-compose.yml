@@ -13,10 +13,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_CONFIG_LOCATION=file:/app/application.properties
+    volumes:
+      - ./apps/api/src/main/resources/application.properties:/app/application.properties
     networks:
       - default
-    volumes:
-      - ./src/main/resources/application.properties:/app/application.properties
 
   database:
     image: postgres
@@ -45,6 +45,20 @@ services:
       - "15432:80"
     depends_on:
       - database
+    networks:
+      - default
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - .docker/redis:/data
     networks:
       - default
 
