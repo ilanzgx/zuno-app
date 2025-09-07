@@ -2,14 +2,15 @@ package com.ilanzgx.demo.modules.user.infrastructure;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ilanzgx.demo.modules.user.application.UserMapper;
 import com.ilanzgx.demo.modules.user.application.UserRequest;
+import com.ilanzgx.demo.modules.user.application.UserResponse;
 import com.ilanzgx.demo.modules.user.domain.User;
 import com.ilanzgx.demo.modules.user.domain.UserService;
 
@@ -30,7 +31,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(this.userService.getAllUsers());
+    public List<UserResponse> getAllUsers() {
+        List<User> users = this.userService.getAllUsers();
+        return users.stream().map(userMapper::toResponse).toList();
     }
 }
