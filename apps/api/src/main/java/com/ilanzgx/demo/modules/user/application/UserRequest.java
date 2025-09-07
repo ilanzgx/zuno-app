@@ -1,3 +1,6 @@
 package com.ilanzgx.demo.modules.user.application;
 
-public record UserRequest(String name, String email, String password) {}
+import lombok.Builder;
+
+@Builder
+public record UserRequest(String id, String name, String email, String password) {}
