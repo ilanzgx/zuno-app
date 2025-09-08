@@ -37,7 +37,7 @@ public class StockController {
         return this.stockService.getStock(id);
     }
 
-    @GetMapping()
+    @GetMapping
     public List<StockResponse> getAllStocks() {
         return this.stockService.getAllStocks();
     }
