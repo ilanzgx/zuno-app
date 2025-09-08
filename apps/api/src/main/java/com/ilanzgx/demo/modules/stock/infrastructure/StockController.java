@@ -15,7 +15,7 @@ import com.ilanzgx.demo.modules.stock.application.StockMapper;
 import com.ilanzgx.demo.modules.stock.application.StockRequest;
 import com.ilanzgx.demo.modules.stock.application.StockResponse;
 import com.ilanzgx.demo.modules.stock.domain.Stock;
-import com.ilanzgx.demo.modules.stock.domain.StockService;
+import com.ilanzgx.demo.modules.stock.domain.services.StockService;
 
 import lombok.RequiredArgsConstructor;
 

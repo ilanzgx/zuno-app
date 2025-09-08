@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.stock.infrastructure;
+package com.ilanzgx.demo.modules.stock.infrastructure.services;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import com.ilanzgx.demo.modules.stock.application.StockRequest;
 import com.ilanzgx.demo.modules.stock.application.StockResponse;
 import com.ilanzgx.demo.modules.stock.domain.Stock;
 import com.ilanzgx.demo.modules.stock.domain.StockRepository;
-import com.ilanzgx.demo.modules.stock.domain.StockService;
+import com.ilanzgx.demo.modules.stock.domain.services.StockService;
 import com.ilanzgx.demo.modules.user.domain.User;
 import com.ilanzgx.demo.modules.user.domain.UserRepository;
 
