@@ -3,13 +3,11 @@ package com.ilanzgx.demo.modules.stock.application.mappers;
 import com.ilanzgx.demo.modules.stock.application.dto.stock.*;
 import com.ilanzgx.demo.modules.user.application.UserMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.ilanzgx.demo.modules.stock.domain.Stock;
 import com.ilanzgx.demo.modules.user.domain.User;
 
-import java.util.List;
 import java.util.Map;
 
 @Component

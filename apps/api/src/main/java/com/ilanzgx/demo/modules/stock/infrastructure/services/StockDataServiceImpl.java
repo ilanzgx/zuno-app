@@ -2,6 +2,7 @@ package com.ilanzgx.demo.modules.stock.infrastructure.services;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +16,19 @@ import lombok.RequiredArgsConstructor;
 public class StockDataServiceImpl implements StockDataService {
     private final HttpFetch httpFetch;
 
+    @Value("${BRAPI_URL}")
+    private String apiUrl;
+
+    @Value("${BRAPI_TOKEN}")
+    private String apiToken;
+
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ResponseEntity<Map<String, Object>> getStockData(String ticker) {
         ResponseEntity<Map> response = httpFetch.get(
-            "https://brapi.dev/api/quote/" + ticker,
+            this.apiUrl + "/api/quote/" + ticker,
             Map.of(
-                    "Authorization", "Bearer token",
+                    "Authorization", "Bearer " + this.apiToken,
                     "Accept", "application/json"
             ),
             Map.class
