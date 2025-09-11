@@ -16,21 +16,18 @@ public class StockDataServiceImpl implements StockDataService {
     private final HttpFetch httpFetch;
 
     @Override
-    public ResponseEntity<String> getStockData(String ticker) {
-        var response = httpFetch.get(
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<Map<String, Object>> getStockData(String ticker) {
+        ResponseEntity<Map> response = httpFetch.get(
             "https://brapi.dev/api/quote/" + ticker,
-                Map.of(
+            Map.of(
                     "Authorization", "Bearer token",
                     "Accept", "application/json"
-                ),
-            String.class
+            ),
+            Map.class
         );
-        System.out.println(response.getBody());
-        System.out.println(response.getStatusCode());
-        System.out.println(response.getHeaders());
-        System.out.println(response);
 
-        return response;
+        return (ResponseEntity<Map<String, Object>>) (ResponseEntity<?>) response;
     }
 
 }
