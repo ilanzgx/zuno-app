@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 
 import com.ilanzgx.demo.modules.user.application.dto.CreateUserDto;
 import com.ilanzgx.demo.modules.user.application.dto.UpdateUserDto;
+import com.ilanzgx.demo.modules.user.application.dto.UserRequest;
+import com.ilanzgx.demo.modules.user.application.dto.UserResponse;
 import com.ilanzgx.demo.modules.user.domain.User;
 
 @Component

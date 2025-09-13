@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ilanzgx.demo.modules.user.application.UserMapper;
-import com.ilanzgx.demo.modules.user.application.UserResponse;
 import com.ilanzgx.demo.modules.user.application.dto.CreateUserDto;
 import com.ilanzgx.demo.modules.user.application.dto.UpdateUserDto;
+import com.ilanzgx.demo.modules.user.application.dto.UserResponse;
 import com.ilanzgx.demo.modules.user.domain.User;
 import com.ilanzgx.demo.modules.user.domain.UserService;
 

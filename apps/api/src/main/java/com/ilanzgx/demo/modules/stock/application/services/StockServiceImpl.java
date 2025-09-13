@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.stock.infrastructure.services;
+package com.ilanzgx.demo.modules.stock.application.services;
 
 import java.util.List;
 import java.util.Map;

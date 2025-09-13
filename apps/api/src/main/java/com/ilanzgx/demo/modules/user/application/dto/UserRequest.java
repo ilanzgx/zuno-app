@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.user.application;
+package com.ilanzgx.demo.modules.user.application.dto;
 
 import lombok.Builder;
 

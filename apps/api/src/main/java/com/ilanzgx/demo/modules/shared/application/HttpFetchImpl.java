@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.shared.infrastructure;
+package com.ilanzgx.demo.modules.shared.application;
 
 import java.util.Map;
 
