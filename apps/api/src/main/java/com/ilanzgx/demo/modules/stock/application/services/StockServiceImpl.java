@@ -95,14 +95,11 @@ public class StockServiceImpl implements StockService {
 
         List<StockResponseWithData> stockDataEnriched = stocks.stream()
             .map(stock -> {
-                ResponseEntity<Map<String, Object>> res = stockDataService.getStockData(stock.getTicker());
-                Map<String, Object> stockData = res.getBody();
+                Map<String, Object> res = stockDataService.getStockData(stock.getTicker());
+                Map<String, Object> stockData = ResponseEntity.ok(res).getBody();
                 return stockMapper.toResponseWithData(stock, stockData);
             })
             .toList();
-
-
-        System.out.println(stockDataEnriched);
 
         return UserStockResponse.builder()
                 .user(userMapper.toResponse(userPropertyOwner))

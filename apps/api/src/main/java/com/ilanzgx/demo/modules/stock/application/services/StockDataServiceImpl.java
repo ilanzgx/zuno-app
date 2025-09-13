@@ -3,6 +3,7 @@ package com.ilanzgx.demo.modules.stock.application.services;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,10 @@ public class StockDataServiceImpl implements StockDataService {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ResponseEntity<Map<String, Object>> getStockData(String ticker) {
+    @Cacheable(value = "stockData", key = "#ticker")
+    public Map<String, Object> getStockData(String ticker) {
+        System.out.println("Buscando dados da API externa para o ticker: " + ticker);
+
         ResponseEntity<Map> response = httpFetch.get(
             this.apiUrl + "/api/quote/" + ticker,
             Map.of(
@@ -34,7 +38,7 @@ public class StockDataServiceImpl implements StockDataService {
             Map.class
         );
 
-        return (ResponseEntity<Map<String, Object>>) (ResponseEntity<?>) response;
+        return response.getBody();
     }
 
 }

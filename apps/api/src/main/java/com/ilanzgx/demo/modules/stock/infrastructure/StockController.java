@@ -64,6 +64,7 @@ public class StockController {
 
     @GetMapping("/data/{ticker}")
     public ResponseEntity<Map<String, Object>> getStockData(@PathVariable String ticker) {
-        return this.stockDataService.getStockData(ticker);
+        Map<String, Object> stockData = this.stockDataService.getStockData(ticker);
+        return ResponseEntity.ok(stockData);
     }
 }
