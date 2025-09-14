@@ -30,7 +30,7 @@ public class StockDataServiceImpl implements StockDataService {
         System.out.println("Buscando dados da API externa para o ticker: " + ticker);
 
         ResponseEntity<Map> response = httpFetch.get(
-            this.apiUrl + "/api/quote/" + ticker,
+            this.apiUrl + "/api/quote/" + ticker + "?modules=summaryProfile&fundamental=true",
             Map.of(
                     "Authorization", "Bearer " + this.apiToken,
                     "Accept", "application/json"
