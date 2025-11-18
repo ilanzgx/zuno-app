@@ -16,31 +16,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
-const formSchema = z
-  .object({
-    name: z
-      .string()
-      .min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
-    email: z.string().email({ message: "Por favor, insira um email válido." }),
-    password: z
-      .string()
-      .min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: "A confirmação de senha é obrigatória." }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem.",
-    path: ["confirmPassword"],
-  });
+import { signUpSchema } from "@/resources/user/user.schemas";
+import { userService } from "@/resources/user/user.service";
 
 export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const signUpForm = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const signUpForm = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -49,9 +33,11 @@ export default function Registrar() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Implementar a lógica de registro
+  async function onSubmit(values: z.infer<typeof signUpSchema>) {
     console.log(values);
+    try {
+      await userService.signUp(values);
+    } catch (err) {}
   }
 
   return (

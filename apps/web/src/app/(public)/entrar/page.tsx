@@ -16,28 +16,25 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
-const formSchema = z.object({
-  email: z.string().email({ message: "Por favor, insira um email válido." }),
-  password: z
-    .string()
-    .min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
-});
+import { signInSchema } from "@/resources/user/user.schemas";
+import { userService } from "@/resources/user/user.service";
 
 export default function Entrar() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const signInForm = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const signInForm = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Implementar a lógica de autenticação
+  async function onSubmit(values: z.infer<typeof signInSchema>) {
     console.log(values);
+    try {
+      await userService.signIn(values);
+    } catch (err) {}
   }
 
   return (
