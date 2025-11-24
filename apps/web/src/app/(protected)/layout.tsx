@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 
 import { getProfile } from "@/resources/user/user.service";
 import { redirect } from "next/navigation";
+import StoreInitializer from "@/components/store-initializer";
 
 export default async function ProtectedLayout({
   children,
@@ -17,7 +18,8 @@ export default async function ProtectedLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar user={profile.user} />
+      <StoreInitializer user={profile.user} />
+      <AppSidebar />
       <main className="w-full">
         <div className="p-4 pt-0">{children}</div>
       </main>

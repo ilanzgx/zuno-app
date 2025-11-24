@@ -19,6 +19,7 @@ import { useState } from "react";
 import { signInSchema } from "@/resources/user/user.schemas";
 import { signIn } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Entrar() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,9 +37,11 @@ export default function Entrar() {
     console.log(values);
     try {
       await signIn(values);
-
+      toast.success("Login realizado com sucesso!");
       router.push("/dashboard");
-    } catch (err) {}
+    } catch (err) {
+      toast.error("Erro ao realizar login. Verifique suas credenciais.");
+    }
   }
 
   return (

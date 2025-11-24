@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { signOut } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
-import { type User } from "@/resources/user/user.entity";
+import { useUserStore } from "@/stores/user.store";
 
 // Menu items.
 const items = [
@@ -60,8 +60,9 @@ const items = [
   },
 ];
 
-export function AppSidebar({ user }: { user: User }) {
+export function AppSidebar() {
   const router = useRouter();
+  const user = useUserStore((state) => state.user);
 
   async function handleSignOut() {
     await signOut();
@@ -119,8 +120,8 @@ export function AppSidebar({ user }: { user: User }) {
                 <UserIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold">{user?.name}</span>
+                <span className="truncate text-xs">{user?.email}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

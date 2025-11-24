@@ -19,6 +19,7 @@ import { useState } from "react";
 import { signUpSchema } from "@/resources/user/user.schemas";
 import { signUp } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,9 +40,12 @@ export default function Registrar() {
     console.log(values);
     try {
       await signUp(values);
+      toast.success("Conta criada com sucesso!");
 
       router.push("/dashboard");
-    } catch (err) {}
+    } catch (err) {
+      toast.error("Erro ao criar conta. Tente novamente.");
+    }
   }
 
   return (
