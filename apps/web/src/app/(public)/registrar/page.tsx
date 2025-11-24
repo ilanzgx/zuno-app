@@ -18,10 +18,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { signUpSchema } from "@/resources/user/user.schemas";
 import { signUp } from "@/resources/user/user.service";
+import { useRouter } from "next/navigation";
 
 export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
   const signUpForm = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -37,7 +39,9 @@ export default function Registrar() {
     console.log(values);
     try {
       await signUp(values);
-    } catch (err) { }
+
+      router.push("/dashboard");
+    } catch (err) {}
   }
 
   return (

@@ -48,6 +48,11 @@ public class UserController {
         return this.userService.getUser(id).map(userMapper::toResponse).orElse(null);
     }
 
+    @GetMapping("/me")
+    public UserResponse getProfile(@org.springframework.security.core.annotation.AuthenticationPrincipal User user) {
+        return userMapper.toResponse(user);
+    }
+
     @PutMapping("/{id}")
     public UserResponse updateUser(@PathVariable String id, @RequestBody UpdateUserDto updateUserDto) {
         User updatedUser = this.userService.updateUser(id,

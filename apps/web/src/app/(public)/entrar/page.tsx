@@ -18,9 +18,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { signInSchema } from "@/resources/user/user.schemas";
 import { signIn } from "@/resources/user/user.service";
+import { useRouter } from "next/navigation";
 
 export default function Entrar() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const signInForm = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -34,7 +36,9 @@ export default function Entrar() {
     console.log(values);
     try {
       await signIn(values);
-    } catch (err) { }
+
+      router.push("/dashboard");
+    } catch (err) {}
   }
 
   return (

@@ -8,7 +8,7 @@ import {
   TrendingUp,
   Settings,
   LogOut,
-  User,
+  User as UserIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -22,6 +22,9 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { signOut } from "@/resources/user/user.service";
+import { useRouter } from "next/navigation";
+import { type User } from "@/resources/user/user.entity";
 
 // Menu items.
 const items = [
@@ -57,7 +60,14 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ user }: { user: User }) {
+  const router = useRouter();
+
+  async function handleSignOut() {
+    await signOut();
+    router.push("/entrar");
+  }
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -106,16 +116,19 @@ export function AppSidebar() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <User className="size-4" />
+                <UserIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Usuário</span>
-                <span className="truncate text-xs">usuario@email.com</span>
+                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate text-xs">{user.email}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton>
+            <SidebarMenuButton
+              className="cursor-pointer"
+              onClick={handleSignOut}
+            >
               <LogOut />
               <span>Sair</span>
             </SidebarMenuButton>

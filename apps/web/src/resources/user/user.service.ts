@@ -57,3 +57,38 @@ export async function signUp(credentials: SignUpDTO): Promise<AuthResponse> {
 
   return { token: data.token };
 }
+
+export async function signOut() {
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
+}
+
+export async function getProfile(): Promise<AuthResponse | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const user = await response.json();
+  return { token, user };
+}
+
+export async function validateToken(): Promise<boolean> {
+  const profile = await getProfile();
+  return !!profile;
+}
