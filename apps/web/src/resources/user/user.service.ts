@@ -1,47 +1,59 @@
-import { type User } from "./user.entity";
+"use server";
+
+import { cookies } from "next/headers";
 import { type SignInDTO, type SignUpDTO } from "./user.schemas";
 import { type AuthResponse } from "./user.types";
 
-class UserService {
-  API_BASE_URL = "http://localhost:8080/v1";
+const API_BASE_URL = "http://localhost:8080/v1";
 
-  async signIn(credentials: SignInDTO): Promise<AuthResponse> {
-    const response = await fetch(`${this.API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
+export async function signIn(credentials: SignInDTO): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+    cache: "no-store",
+  });
 
-    if (!response.ok) {
-      throw new Error("Failed to sign in");
-    }
-
-    const data = await response.json();
-
-    return {
-      token: data.token,
-    };
+  if (!response.ok) {
+    throw new Error("Failed to sign in");
   }
 
-  async signUp(credentials: SignUpDTO): Promise<AuthResponse> {
-    const { confirmPassword, ...payload } = credentials;
+  const data = await response.json();
 
-    const response = await fetch(`${this.API_BASE_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+  const cookieStore = await cookies();
+  cookieStore.set("token", data.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
 
-    if (!response.ok) {
-      throw new Error("Failed to sign up");
-    }
-
-    const data = await response.json();
-
-    return {
-      token: data.token,
-    };
-  }
+  return { token: data.token };
 }
 
-export const userService = new UserService();
+export async function signUp(credentials: SignUpDTO): Promise<AuthResponse> {
+  const { confirmPassword, ...payload } = credentials;
+
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to sign up");
+  }
+
+  const data = await response.json();
+
+  const cookieStore = await cookies();
+  cookieStore.set("token", data.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+
+  return { token: data.token };
+}

@@ -17,7 +17,7 @@ import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { signUpSchema } from "@/resources/user/user.schemas";
-import { userService } from "@/resources/user/user.service";
+import { signUp } from "@/resources/user/user.service";
 
 export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,8 +36,8 @@ export default function Registrar() {
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
     console.log(values);
     try {
-      await userService.signUp(values);
-    } catch (err) {}
+      await signUp(values);
+    } catch (err) { }
   }
 
   return (

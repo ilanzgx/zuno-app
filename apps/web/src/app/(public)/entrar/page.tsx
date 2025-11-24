@@ -17,7 +17,7 @@ import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { signInSchema } from "@/resources/user/user.schemas";
-import { userService } from "@/resources/user/user.service";
+import { signIn } from "@/resources/user/user.service";
 
 export default function Entrar() {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,8 +33,8 @@ export default function Entrar() {
   async function onSubmit(values: z.infer<typeof signInSchema>) {
     console.log(values);
     try {
-      await userService.signIn(values);
-    } catch (err) {}
+      await signIn(values);
+    } catch (err) { }
   }
 
   return (
