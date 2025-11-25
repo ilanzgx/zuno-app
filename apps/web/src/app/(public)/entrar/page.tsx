@@ -36,6 +36,7 @@ export default function Entrar() {
   async function onSubmit(values: z.infer<typeof signInSchema>) {
     console.log(values);
     try {
+      console.log(process.env.NEXT_PUBLIC_API_URL);
       await signIn(values);
       toast.success("Login realizado com sucesso!");
       router.push("/dashboard");

@@ -4,9 +4,10 @@ import { cookies } from "next/headers";
 import { type SignInDTO, type SignUpDTO } from "./user.schemas";
 import { type AuthResponse } from "./user.types";
 
-const API_BASE_URL = "http://localhost:8080/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function signIn(credentials: SignInDTO): Promise<AuthResponse> {
+  console.log(`${API_BASE_URL}/auth/login`);
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -15,7 +16,9 @@ export async function signIn(credentials: SignInDTO): Promise<AuthResponse> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to sign in");
+    const errorText = await response.text();
+    console.error(`Sign in failed: ${response.status} - ${errorText}`);
+    throw new Error(`Failed to sign in: ${response.status}`);
   }
 
   const data = await response.json();
@@ -34,6 +37,7 @@ export async function signIn(credentials: SignInDTO): Promise<AuthResponse> {
 export async function signUp(credentials: SignUpDTO): Promise<AuthResponse> {
   const { confirmPassword, ...payload } = credentials;
 
+  console.log(`${API_BASE_URL}/auth/register`);
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -42,7 +46,9 @@ export async function signUp(credentials: SignUpDTO): Promise<AuthResponse> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to sign up");
+    const errorText = await response.text();
+    console.error(`Sign up failed: ${response.status} - ${errorText}`);
+    throw new Error(`Failed to sign up: ${response.status}`);
   }
 
   const data = await response.json();

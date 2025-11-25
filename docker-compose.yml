@@ -4,18 +4,19 @@ services:
       context: ./apps/web
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3000:3000"
+    env_file:
+      - ./apps/web/.env.production
     depends_on:
       - api
-    volumes:
-      - /usr/src/app/node_modules
+    restart: unless-stopped
 
   api:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
     ports:
-      - "18080:8080"
+      - "8080:8080"
     depends_on:
       database:
         condition: service_healthy
@@ -26,8 +27,6 @@ services:
       - SPRING_CONFIG_LOCATION=file:/app/application.properties
     volumes:
       - ./apps/api/src/main/resources/application.properties:/app/application.properties
-    networks:
-      - default
 
   database:
     image: postgres
@@ -44,8 +43,6 @@ services:
       retries: 10
     volumes:
       - .docker/postgres:/var/lib/postgresql/data
-    networks:
-      - default
 
   pgadmin:
     image: dpage/pgadmin4
@@ -56,8 +53,6 @@ services:
       - "15432:80"
     depends_on:
       - database
-    networks:
-      - default
 
   redis:
     image: redis:latest
@@ -70,9 +65,3 @@ services:
       retries: 10
     volumes:
       - .docker/redis:/data
-    networks:
-      - default
-
-networks:
-  default:
-    driver: bridge
