@@ -4,7 +4,7 @@ services:
       context: ./apps/web
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "13000:3000"
     env_file:
       - ./apps/web/.env.production
     depends_on:
@@ -16,7 +16,7 @@ services:
       context: ./apps/api
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "18080:8080"
     depends_on:
       database:
         condition: service_healthy
