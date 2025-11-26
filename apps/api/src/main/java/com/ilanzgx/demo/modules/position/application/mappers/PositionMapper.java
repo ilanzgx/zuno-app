@@ -28,6 +28,7 @@ public class PositionMapper {
             .id(position.getId())
             .ticker(position.getTicker())
             .quantity(position.getQuantity())
+            .averagePrice(position.getAveragePrice())
             .user(userMapper.toResponse(position.getPropertyOwner()))
             .build();
     }
@@ -52,6 +53,7 @@ public class PositionMapper {
                 .id(position.getId())
                 .ticker(position.getTicker())
                 .quantity(position.getQuantity())
+                .averagePrice(position.getAveragePrice())
                 .positionData(positionData)
                 .build();
     }
