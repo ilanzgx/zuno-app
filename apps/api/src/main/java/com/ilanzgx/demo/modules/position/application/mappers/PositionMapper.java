@@ -18,7 +18,7 @@ public class PositionMapper {
     public Position toEntity(PositionRequest positionRequest, User propertyOwner) {
         return Position.builder()
             .ticker(positionRequest.ticker())
-            .amount(positionRequest.amount())
+            .quantity(positionRequest.quantity())
             .propertyOwner(propertyOwner)
             .build();
     }
@@ -27,13 +27,13 @@ public class PositionMapper {
         return PositionResponse.builder()
             .id(position.getId())
             .ticker(position.getTicker())
-            .amount(position.getAmount())
+            .quantity(position.getQuantity())
             .user(userMapper.toResponse(position.getPropertyOwner()))
             .build();
     }
 
     public PositionResponseWithoutUser toResponseWithoutUser(Position position) {
-        return PositionResponseWithoutUser.builder().id(position.getId()).ticker(position.getTicker()).amount(position.getAmount()).build();
+        return PositionResponseWithoutUser.builder().id(position.getId()).ticker(position.getTicker()).quantity(position.getQuantity()).build();
     }
 
     /*
@@ -51,7 +51,7 @@ public class PositionMapper {
         return PositionResponseWithData.builder()
                 .id(position.getId())
                 .ticker(position.getTicker())
-                .amount(position.getAmount())
+                .quantity(position.getQuantity())
                 .positionData(positionData)
                 .build();
     }

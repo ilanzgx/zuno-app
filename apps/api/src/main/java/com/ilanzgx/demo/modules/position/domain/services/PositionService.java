@@ -6,6 +6,7 @@ import com.ilanzgx.demo.modules.position.application.dto.position.PositionReques
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionResponse;
 import com.ilanzgx.demo.modules.position.application.dto.position.UserPositionResponse;
 import com.ilanzgx.demo.modules.position.domain.Position;
+import com.ilanzgx.demo.modules.transaction.domain.Transaction;
 
 public interface PositionService {
     Position createPosition(PositionRequest positionRequest);
@@ -13,5 +14,9 @@ public interface PositionService {
     List<PositionResponse> getAllPositions();
     PositionResponse updatePosition(String id, PositionRequest positionRequest);
     void deletePosition(String id);
+
     UserPositionResponse getPositionsByUser(String userId);
+
+    void processTransaction(Transaction tx);
+
 }

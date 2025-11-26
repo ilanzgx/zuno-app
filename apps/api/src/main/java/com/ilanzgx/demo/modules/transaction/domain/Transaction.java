@@ -1,5 +1,6 @@
 package com.ilanzgx.demo.modules.transaction.domain;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
@@ -44,7 +45,7 @@ public class Transaction {
     private Integer quantity;
 
     @Column(nullable = false)
-    private BigInteger price;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private LocalDate date;

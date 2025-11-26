@@ -34,7 +34,7 @@ public class Position {
     private String ticker;
 
     @Column
-    private Integer amount;
+    private Integer quantity;
 
     @Column(precision = 19, scale = 2)
     private BigDecimal averagePrice;

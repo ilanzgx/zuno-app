@@ -5,4 +5,4 @@ import com.ilanzgx.demo.modules.user.application.dto.UserResponse;
 import lombok.Builder;
 
 @Builder
-public record PositionResponse(String id, String ticker, Integer amount, UserResponse user) {}
+public record PositionResponse(String id, String ticker, Integer quantity, UserResponse user) {}
