@@ -1,0 +1,17 @@
+package com.ilanzgx.demo.modules.position.domain.services;
+
+import java.util.List;
+
+import com.ilanzgx.demo.modules.position.application.dto.position.PositionRequest;
+import com.ilanzgx.demo.modules.position.application.dto.position.PositionResponse;
+import com.ilanzgx.demo.modules.position.application.dto.position.UserPositionResponse;
+import com.ilanzgx.demo.modules.position.domain.Position;
+
+public interface PositionService {
+    Position createPosition(PositionRequest positionRequest);
+    PositionResponse getPosition(String id);
+    List<PositionResponse> getAllPositions();
+    PositionResponse updatePosition(String id, PositionRequest positionRequest);
+    void deletePosition(String id);
+    UserPositionResponse getPositionsByUser(String userId);
+}

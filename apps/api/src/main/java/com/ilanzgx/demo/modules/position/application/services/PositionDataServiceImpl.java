@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.stock.application.services;
+package com.ilanzgx.demo.modules.position.application.services;
 
 import java.util.Map;
 
@@ -8,13 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ilanzgx.demo.modules.shared.domain.HttpFetch;
-import com.ilanzgx.demo.modules.stock.domain.services.StockDataService;
+import com.ilanzgx.demo.modules.position.domain.services.PositionDataService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class StockDataServiceImpl implements StockDataService {
+public class PositionDataServiceImpl implements PositionDataService {
     private final HttpFetch httpFetch;
 
     @Value("${BRAPI_URL}")
@@ -25,8 +25,8 @@ public class StockDataServiceImpl implements StockDataService {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Cacheable(value = "stockData", key = "#ticker")
-    public Map<String, Object> getStockData(String ticker) {
+    @Cacheable(value = "positionData", key = "#ticker")
+    public Map<String, Object> getPositionData(String ticker) {
         System.out.println("Buscando dados da API externa para o ticker: " + ticker);
 
         ResponseEntity<Map> response = httpFetch.get(

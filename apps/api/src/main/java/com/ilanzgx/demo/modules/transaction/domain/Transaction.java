@@ -1,9 +1,14 @@
-package com.ilanzgx.demo.modules.stock.domain;
+package com.ilanzgx.demo.modules.transaction.domain;
+
+import java.math.BigInteger;
+import java.time.LocalDate;
 
 import com.ilanzgx.demo.modules.user.domain.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,24 +22,34 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "stocks")
+@Table(name = "transactions")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Stock {
+public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column
+    @Column(nullable = false)
     private String ticker;
 
-    @Column
-    private Integer amount;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransactionType type;
+
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(nullable = false)
+    private BigInteger price;
+
+    @Column(nullable = false)
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User propertyOwner;
+    private User user;
 }
