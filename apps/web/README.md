@@ -12,6 +12,7 @@ O frontend é uma Single-Page Application (SPA) moderna e responsiva, construíd
 - **Estilização:** Tailwind CSS
 - **Componentes:** Shadcn UI (componentes reutilizáveis e acessíveis)
 - **Formulários:** React Hook Form com Zod para validação
+- **Gerenciamento de Estado:** Zustand (para estado global do usuário)
 
 ## 🏗️ Estrutura do Projeto
 
@@ -24,7 +25,7 @@ O código-fonte está localizado em `src/` e segue as convenções do App Router
     - `/entrar`: Página de login.
     - `/registrar`: Página de registro de novos usuários.
   - **`(protected)/`**: Agrupa as rotas que exigem autenticação.
-    - `/dashboard`: A página principal do usuário após o login.
+    - `/dashboard`: A página principal do usuário após o login, exibindo um resumo da carteira e movimentações.
   - `layout.tsx`: O layout raiz que envolve todas as páginas.
   - `globals.css`: Estilos globais e configuração do Tailwind CSS.
 
@@ -32,7 +33,12 @@ O código-fonte está localizado em `src/` e segue as convenções do App Router
 
 - **`lib/`**: Utilitários, como a função `cn` para mesclar classes do Tailwind CSS.
 
-- **`resources/`**: Lógica de domínio do frontend, como entidades e serviços para interagir com a API (atualmente em desenvolvimento).
+-   **`resources/`**: Contém a lógica de domínio do frontend, incluindo entidades, schemas e serviços para interação com a API.
+    -   **`position`**: Define entidades (`position.entity.ts`) e serviços (`position.service.ts`) para gerenciar as posições de investimento dos usuários.
+    -   **`transaction`**: Define entidades (`transaction.entity.ts`) para representar as transações financeiras.
+    -   **`user`**: Contém entidades (`user.entity.ts`), schemas de validação (`user.schemas.ts`) e serviços (`user.service.ts`) relacionados à autenticação e gerenciamento de usuários.
+
+- **`stores/`**: Contém stores (lojas) de estado global, como `user.store.ts` para dados do usuário, gerenciadas com Zustand.
 
 ## 🚀 Como Começar
 
@@ -54,4 +60,4 @@ O código-fonte está localizado em `src/` e segue as convenções do App Router
 
 A interface é construída com **Shadcn UI**, que fornece um conjunto de componentes de alta qualidade, acessíveis e customizáveis. A estilização é feita primariamente com **Tailwind CSS**, permitindo a criação de interfaces consistentes e modernas de forma utilitária.
 
-As páginas de autenticação (`/entrar` e `/registrar`) demonstram o uso de formulários controlados com **React Hook Form** e validação de schema com **Zod**, garantindo uma experiência de usuário robusta e segura.
+As páginas de autenticação (`/entrar` e `/registrar`) demonstram o uso de formulários controlados com **React Hook Form** e validação de schema com **Zod**, garantindo uma experiência de usuário robusta e segura. O gerenciamento de estado global é feito com **Zustand**.

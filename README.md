@@ -9,7 +9,7 @@ Com essa consolidação, os usuários podem acompanhar em tempo real a performan
 
 ### Backend (API)
 - **Java 21**
-- **Spring Boot 3**
+- **Spring Boot 3.5.5**
 - **Spring Data JPA**
 - **Spring Security (com JWT)**
 - **PostgreSQL**
@@ -22,6 +22,7 @@ Com essa consolidação, os usuários podem acompanhar em tempo real a performan
 - **TypeScript**
 - **Tailwind CSS**
 - **Shadcn UI**
+- **Zustand**
 
 ## 🚀 Início Rápido
 
@@ -87,14 +88,16 @@ O projeto é um monorepo com a seguinte estrutura:
 ## 🔌 API Endpoints
 A API fornece os seguintes endpoints:
 
-- **Autenticação:** `/auth`
-- **Usuários:** `/users`
-- **Ações:** `/stocks`
+- **Autenticação:** `/v1/auth`
+- **Usuários:** `/v1/users`
+- **Posições:** `/v1/positions`
+- **Transações:** `/v1/transactions`
 
 Para mais detalhes sobre cada endpoint, consulte o código-fonte nos respectivos controllers:
 - `apps/api/src/main/java/com/ilanzgx/demo/modules/auth/infrastructure/AuthController.java`
 - `apps/api/src/main/java/com/ilanzgx/demo/modules/user/infrastructure/UserController.java`
-- `apps/api/src/main/java/com/ilanzgx/demo/modules/stock/infrastructure/StockController.java`
+- `apps/api/src/main/java/com/ilanzgx/demo/modules/position/infrastructure/PositionController.java`
+- `apps/api/src/main/java/com/ilanzgx/demo/modules/transaction/infrastructure/TransactionController.java`
 
 ## 🤝 Contribuição
 Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
