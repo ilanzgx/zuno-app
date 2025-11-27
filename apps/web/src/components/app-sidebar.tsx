@@ -22,6 +22,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { signOut } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/user.store";
@@ -48,11 +49,6 @@ const items = [
     title: "Transações",
     url: "/transacoes",
     icon: ArrowLeftRight,
-  },
-  {
-    title: "Rendimentos",
-    url: "/rendimentos",
-    icon: TrendingUp,
   },
   {
     title: "Configurações",
@@ -130,10 +126,14 @@ export function AppSidebar() {
                   className="truncate font-semibold"
                   suppressHydrationWarning
                 >
-                  {isMounted ? user?.name : "Carregando..."}
+                  {isMounted ? (
+                    user?.name
+                  ) : (
+                    <Skeleton className="h-4 w-24 my-1" />
+                  )}
                 </span>
                 <span className="truncate text-xs" suppressHydrationWarning>
-                  {isMounted ? user?.email : "..."}
+                  {isMounted ? user?.email : <Skeleton className="h-3 w-32" />}
                 </span>
               </div>
             </SidebarMenuButton>

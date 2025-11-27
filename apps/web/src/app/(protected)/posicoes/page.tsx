@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getPositionsByUser } from "@/resources/position/position.service";
 import { Position } from "@/resources/position/position.entity";
 import Image from "next/image";
@@ -48,18 +49,6 @@ export default function PosicoesPage() {
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight">Movimentações</h2>
-          <div className="flex gap-2">
-            <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
-              Exportar
-            </button>
-            <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
-              + Adicionar Ativo
-            </button>
-          </div>
-        </div>
-
         <div className="rounded-md border bg-card">
           <div className="p-4 flex gap-4 border-b">
             <input
@@ -68,9 +57,7 @@ export default function PosicoesPage() {
             />
           </div>
           {loading ? (
-            <div className="p-8 text-center text-muted-foreground">
-              Carregando...
-            </div>
+            <PositionsTableSkeleton />
           ) : (
             <TransactionsTable positions={positions} isMounted={isMounted} />
           )}
@@ -91,7 +78,7 @@ function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
   if (displayPositions.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground">
-        Nenhuma movimentação encontrada.
+        Nenhuma posição encontrada.
       </div>
     );
   }
@@ -220,6 +207,62 @@ function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
             </TableRow>
           );
         })}
+      </TableBody>
+    </Table>
+  );
+}
+
+function PositionsTableSkeleton() {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[60px]"></TableHead>
+          <TableHead>Ativo</TableHead>
+          <TableHead>Ordem</TableHead>
+          <TableHead>Preço Médio</TableHead>
+          <TableHead className="text-right">Quantidade</TableHead>
+          <TableHead className="text-right">Preço Atual</TableHead>
+          <TableHead className="text-right">Total Investido</TableHead>
+          <TableHead className="text-right">Valor Atual</TableHead>
+          <TableHead className="w-[50px]"></TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <TableRow key={index}>
+            <TableCell>
+              <Skeleton className="w-10 h-10 rounded-full" />
+            </TableCell>
+            <TableCell>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-6 w-16 rounded-full" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-20" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-12 ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-20 ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-24 ml-auto" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-24 ml-auto" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-4" />
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
