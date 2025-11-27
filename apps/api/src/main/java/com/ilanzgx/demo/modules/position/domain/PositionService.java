@@ -1,11 +1,10 @@
-package com.ilanzgx.demo.modules.position.domain.services;
+package com.ilanzgx.demo.modules.position.domain;
 
 import java.util.List;
 
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionRequest;
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionResponse;
 import com.ilanzgx.demo.modules.position.application.dto.position.UserPositionResponse;
-import com.ilanzgx.demo.modules.position.domain.Position;
 import com.ilanzgx.demo.modules.transaction.domain.Transaction;
 
 public interface PositionService {

@@ -19,7 +19,7 @@ import com.ilanzgx.demo.modules.position.application.mappers.PositionMapper;
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionRequest;
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionResponse;
 import com.ilanzgx.demo.modules.position.domain.Position;
-import com.ilanzgx.demo.modules.position.domain.services.PositionService;
+import com.ilanzgx.demo.modules.position.domain.PositionService;
 
 import lombok.RequiredArgsConstructor;
 

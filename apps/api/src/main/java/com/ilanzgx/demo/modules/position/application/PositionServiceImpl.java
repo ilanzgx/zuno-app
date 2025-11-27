@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.position.application.services;
+package com.ilanzgx.demo.modules.position.application;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,7 +17,7 @@ import com.ilanzgx.demo.modules.position.application.dto.position.PositionReques
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionResponse;
 import com.ilanzgx.demo.modules.position.domain.Position;
 import com.ilanzgx.demo.modules.position.domain.PositionRepository;
-import com.ilanzgx.demo.modules.position.domain.services.PositionService;
+import com.ilanzgx.demo.modules.position.domain.PositionService;
 import com.ilanzgx.demo.modules.transaction.domain.Transaction;
 import com.ilanzgx.demo.modules.transaction.domain.TransactionType;
 import com.ilanzgx.demo.modules.user.domain.User;

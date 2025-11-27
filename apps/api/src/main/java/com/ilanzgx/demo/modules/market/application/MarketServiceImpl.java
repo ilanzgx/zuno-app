@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.market.application.services;
+package com.ilanzgx.demo.modules.market.application;
 
 import java.util.Map;
 
