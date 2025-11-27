@@ -25,6 +25,7 @@ import {
 import { signOut } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/user.store";
+import { useEffect, useState } from "react";
 
 // Menu items.
 const items = [
@@ -32,6 +33,11 @@ const items = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Posições",
+    url: "/posicoes",
+    icon: Wallet,
   },
   {
     title: "Patrimônio",
@@ -42,11 +48,6 @@ const items = [
     title: "Transações",
     url: "/transacoes",
     icon: ArrowLeftRight,
-  },
-  {
-    title: "Carteiras",
-    url: "/carteiras",
-    icon: Wallet,
   },
   {
     title: "Rendimentos",
@@ -63,6 +64,11 @@ const items = [
 export function AppSidebar() {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   async function handleSignOut() {
     await signOut();
@@ -120,8 +126,15 @@ export function AppSidebar() {
                 <UserIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs">{user?.email}</span>
+                <span
+                  className="truncate font-semibold"
+                  suppressHydrationWarning
+                >
+                  {isMounted ? user?.name : "Carregando..."}
+                </span>
+                <span className="truncate text-xs" suppressHydrationWarning>
+                  {isMounted ? user?.email : "..."}
+                </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
