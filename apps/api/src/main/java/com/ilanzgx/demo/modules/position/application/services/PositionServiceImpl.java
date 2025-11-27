@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionResponseWithData;
 import com.ilanzgx.demo.modules.position.application.dto.position.UserPositionResponse;
-import com.ilanzgx.demo.modules.position.domain.services.PositionDataService;
+import com.ilanzgx.demo.modules.market.domain.MarketService;
 import com.ilanzgx.demo.modules.user.application.UserMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class PositionServiceImpl implements PositionService {
     private final UserRepository userRepository;
     private final PositionMapper positionMapper;
     private final UserMapper userMapper;
-    private final PositionDataService positionDataService;
+    private final MarketService marketService;
 
     @Override
     public Position createPosition(PositionRequest positionRequest) {
@@ -99,7 +99,7 @@ public class PositionServiceImpl implements PositionService {
 
         List<PositionResponseWithData> positionDataEnriched = positions.stream()
                 .map(position -> {
-                    Map<String, Object> res = positionDataService.getPositionData(position.getTicker());
+                    Map<String, Object> res = marketService.getMarket(position.getTicker());
                     Map<String, Object> positionData = ResponseEntity.ok(res).getBody();
                     return positionMapper.toResponseWithData(position, positionData);
                 })

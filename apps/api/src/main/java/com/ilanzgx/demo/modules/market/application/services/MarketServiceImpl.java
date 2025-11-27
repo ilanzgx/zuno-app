@@ -1,4 +1,4 @@
-package com.ilanzgx.demo.modules.position.application.services;
+package com.ilanzgx.demo.modules.market.application.services;
 
 import java.util.Map;
 
@@ -8,13 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ilanzgx.demo.modules.shared.domain.HttpFetch;
-import com.ilanzgx.demo.modules.position.domain.services.PositionDataService;
+import com.ilanzgx.demo.modules.market.domain.MarketService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class PositionDataServiceImpl implements PositionDataService {
+public class MarketServiceImpl implements MarketService {
     private final HttpFetch httpFetch;
 
     @Value("${BRAPI_URL}")
@@ -25,8 +25,8 @@ public class PositionDataServiceImpl implements PositionDataService {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Cacheable(value = "positionData", key = "#ticker")
-    public Map<String, Object> getPositionData(String ticker) {
+    @Cacheable(value = "market", key = "#ticker")
+    public Map<String, Object> getMarket(String ticker) {
         System.out.println("Buscando dados da API externa para o ticker: " + ticker);
 
         ResponseEntity<Map> response = httpFetch.get(
