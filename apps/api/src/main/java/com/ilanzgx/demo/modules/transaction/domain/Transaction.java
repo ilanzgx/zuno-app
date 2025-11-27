@@ -1,7 +1,6 @@
 package com.ilanzgx.demo.modules.transaction.domain;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 
 import com.ilanzgx.demo.modules.user.domain.User;

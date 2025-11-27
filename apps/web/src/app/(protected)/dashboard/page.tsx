@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, Wallet } from "lucide-react";
 import {
@@ -22,6 +23,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { getPositionsByUser } from "@/resources/position/position.service";
+import { Position } from "@/resources/position/position.entity";
+import Image from "next/image";
 
 const dataPatrimonio = [
   { name: "Jan", valor: 10000 },
@@ -42,6 +46,24 @@ const dataRentabilidade = [
 ];
 
 export default function Dashboard() {
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPositions() {
+      try {
+        const data = await getPositionsByUser();
+        setPositions(data?.positions || []);
+      } catch (error) {
+        console.error("Failed to fetch positions:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPositions();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
@@ -184,6 +206,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold tracking-tight">Movimentações</h2>
@@ -204,163 +227,144 @@ export default function Dashboard() {
               placeholder="Pesquise aqui..."
             />
           </div>
-          <TransactionsTableMock />
+          {loading ? (
+            <div className="p-8 text-center text-muted-foreground">
+              Carregando...
+            </div>
+          ) : (
+            <TransactionsTable positions={positions} />
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-const mockTransactions = [
-  {
-    id: "1",
-    category: "Ações",
-    ticker: "CMN3",
-    order: "Compra",
-    broker: "RICO INVESTIMENTOS",
-    date: "05/07/2022",
-    quantity: 9,
-    price: 3.56,
-  },
-  {
-    id: "2",
-    category: "Ações",
-    ticker: "BRSR6",
-    order: "Compra",
-    broker: "RICO INVESTIMENTOS",
-    date: "05/07/2022",
-    quantity: 10,
-    price: 9.0,
-  },
-  {
-    id: "3",
-    category: "FIIs",
-    ticker: "TORD11",
-    order: "Compra",
-    broker: "RICO INVESTIMENTOS",
-    date: "19/05/2022",
-    quantity: 2,
-    price: 9.32,
-  },
-  {
-    id: "4",
-    category: "FIIs",
-    ticker: "VSLH11",
-    order: "Compra",
-    broker: "RICO INVESTIMENTOS",
-    date: "17/05/2022",
-    quantity: 7,
-    price: 9.06,
-  },
-  {
-    id: "5",
-    category: "Ações",
-    ticker: "CMN3",
-    order: "Compra",
-    broker: "RICO INVESTIMENTOS",
-    date: "20/04/2022",
-    quantity: 1,
-    price: 5.67,
-  },
-  {
-    id: "6",
-    category: "FIIs",
-    ticker: "TORD11",
-    order: "Compra",
-    broker: "RICO INVESTIMENTOS",
-    date: "20/04/2022",
-    quantity: 8,
-    price: 8.94,
-  },
-  {
-    id: "7",
-    category: "FIIs",
-    ticker: "MXRF11",
-    order: "Compra",
-    broker: "RICO INVESTIMENTOS",
-    date: "16/03/2022",
-    quantity: 9,
-    price: 9.06,
-  },
-];
+interface TransactionsTableProps {
+  positions: Position[];
+}
 
-function TransactionsTableMock() {
+function TransactionsTable({ positions }: TransactionsTableProps) {
+  const displayPositions = positions.slice(0, 10);
+
+  if (displayPositions.length === 0) {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        Nenhuma movimentação encontrada.
+      </div>
+    );
+  }
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Categoria</TableHead>
+          <TableHead className="w-[60px]"></TableHead>
           <TableHead>Ativo</TableHead>
           <TableHead>Ordem</TableHead>
-          <TableHead>Broker</TableHead>
-          <TableHead>Negociação</TableHead>
+          <TableHead>Preço Médio</TableHead>
           <TableHead className="text-right">Quantidade</TableHead>
-          <TableHead className="text-right">Preço</TableHead>
-          <TableHead className="text-right">Total</TableHead>
+          <TableHead className="text-right">Preço Atual</TableHead>
+          <TableHead className="text-right">Total Investido</TableHead>
+          <TableHead className="text-right">Valor Atual</TableHead>
           <TableHead className="w-[50px]"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {mockTransactions.map((tx) => (
-          <TableRow key={tx.id}>
-            <TableCell className="font-medium">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-1 h-4 rounded-full ${
-                    tx.category === "Ações" ? "bg-red-500" : "bg-blue-500"
-                  }`}
-                ></div>
-                {tx.category}
-              </div>
-            </TableCell>
-            <TableCell className="font-bold">{tx.ticker}</TableCell>
-            <TableCell>
-              <Badge
-                variant="secondary"
-                className="font-normal text-muted-foreground bg-secondary/50"
-              >
-                {tx.order}
-              </Badge>
-            </TableCell>
-            <TableCell className="text-muted-foreground text-xs uppercase">
-              {tx.broker}
-            </TableCell>
-            <TableCell>{tx.date}</TableCell>
-            <TableCell className="text-right">{tx.quantity}</TableCell>
-            <TableCell className="text-right">
-              {new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(tx.price)}
-            </TableCell>
-            <TableCell className="text-right font-medium">
-              {new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(tx.price * tx.quantity)}
-            </TableCell>
-            <TableCell>
-              <button className="text-muted-foreground hover:text-foreground">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-ellipsis-vertical"
+        {displayPositions.map((position) => {
+          const positionData = position.positionData?.results?.[0];
+          const currentPrice = positionData?.regularMarketPrice || 0;
+          const totalInvested = position.averagePrice * position.quantity;
+          const currentValue = currentPrice * position.quantity;
+          const logoUrl =
+            positionData?.logourl || "https://icons.brapi.dev/icons/BRAPI.svg";
+          const shortName = positionData?.shortName || position.ticker;
+
+          return (
+            <TableRow key={position.id}>
+              <TableCell>
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  <Image
+                    src={logoUrl}
+                    alt={position.ticker}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                  />
+                </div>
+              </TableCell>
+              <TableCell>
+                <div>
+                  <div className="font-bold">{position.ticker}</div>
+                  <div className="text-xs text-muted-foreground truncate max-w-[150px]">
+                    {shortName}
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant="secondary"
+                  className="font-normal text-muted-foreground bg-secondary/50"
                 >
-                  <circle cx="12" cy="12" r="1" />
-                  <circle cx="12" cy="5" r="1" />
-                  <circle cx="12" cy="19" r="1" />
-                </svg>
-              </button>
-            </TableCell>
-          </TableRow>
-        ))}
+                  Compra
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(position.averagePrice)}
+              </TableCell>
+              <TableCell className="text-right">{position.quantity}</TableCell>
+              <TableCell className="text-right">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(currentPrice)}
+              </TableCell>
+              <TableCell className="text-right font-medium">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(totalInvested)}
+              </TableCell>
+              <TableCell className="text-right font-medium">
+                <div
+                  className={
+                    currentValue >= totalInvested
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }
+                >
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(currentValue)}
+                </div>
+              </TableCell>
+              <TableCell>
+                <button className="text-muted-foreground hover:text-foreground">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-ellipsis-vertical"
+                  >
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="12" cy="5" r="1" />
+                    <circle cx="12" cy="19" r="1" />
+                  </svg>
+                </button>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );

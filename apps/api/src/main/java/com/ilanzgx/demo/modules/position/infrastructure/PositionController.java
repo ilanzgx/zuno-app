@@ -28,9 +28,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PositionController {
     private final PositionService positionService;
-    private final PositionDataService positionDataService;
-    private final PositionMapper positionMapper;
+    // private final PositionDataService positionDataService;
+    // private final PositionMapper positionMapper;
 
+    @GetMapping
+    public List<PositionResponse> getAllPositions() {
+        return this.positionService.getAllPositions();
+    }
+
+    @GetMapping("/user/{userId}")
+    public UserPositionResponse getPositionsByUser(@PathVariable String userId) {
+        return this.positionService.getPositionsByUser(userId);
+    }
+
+    /*
     @PostMapping
     public PositionResponse createPosition(@RequestBody PositionRequest positionRequest) {
         Position position = this.positionService.createPosition(positionRequest);
@@ -42,10 +53,7 @@ public class PositionController {
         return this.positionService.getPosition(id);
     }
 
-    @GetMapping
-    public List<PositionResponse> getAllPositions() {
-        return this.positionService.getAllPositions();
-    }
+
 
     @PutMapping("/{id}")
     public PositionResponse updatePosition(@PathVariable String id, @RequestBody PositionRequest positionRequest) {
@@ -57,14 +65,10 @@ public class PositionController {
         this.positionService.deletePosition(id);
     }
 
-    @GetMapping("/user/{userId}")
-    public UserPositionResponse getPositionsByUser(@PathVariable String userId) {
-        return this.positionService.getPositionsByUser(userId);
-    }
-
     @GetMapping("/data/{ticker}")
     public ResponseEntity<Map<String, Object>> getPositionData(@PathVariable String ticker) {
         Map<String, Object> positionData = this.positionDataService.getPositionData(ticker);
         return ResponseEntity.ok(positionData);
     }
+    */
 }
