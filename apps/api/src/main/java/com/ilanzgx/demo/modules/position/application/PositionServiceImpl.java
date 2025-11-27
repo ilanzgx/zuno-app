@@ -99,7 +99,7 @@ public class PositionServiceImpl implements PositionService {
 
         List<PositionResponseWithData> positionDataEnriched = positions.stream()
                 .map(position -> {
-                    Map<String, Object> res = marketService.getMarket(position.getTicker());
+                    Map<String, Object> res = marketService.getSimpleStockData(position.getTicker());
                     Map<String, Object> positionData = ResponseEntity.ok(res).getBody();
                     return positionMapper.toResponseWithData(position, positionData);
                 })

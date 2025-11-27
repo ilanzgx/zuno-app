@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ilanzgx.demo.modules.transaction.application.dto.CreateTransactionDto;
+import com.ilanzgx.demo.modules.transaction.application.dto.TransactionResponse;
 import com.ilanzgx.demo.modules.transaction.domain.Transaction;
 import com.ilanzgx.demo.modules.transaction.domain.TransactionService;
 
@@ -28,7 +29,7 @@ public class TransactionController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Transaction> getTransactionsByUser(@PathVariable String userId) {
+    public List<TransactionResponse> getTransactionsByUser(@PathVariable String userId) {
         return transactionService.getTransactionsByUser(userId);
     }
 }

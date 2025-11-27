@@ -25,18 +25,32 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Cacheable(value = "market", key = "#ticker")
-    public Map<String, Object> getMarket(String ticker) {
-        System.out.println("Buscando dados da API externa para o ticker: " + ticker);
+    @Cacheable(value = "simpleStockData", key = "#ticker")
+    public Map<String, Object> getSimpleStockData(String ticker) {
+        System.out.println("Buscando dados simples da API externa para o ticker: " + ticker);
 
         ResponseEntity<Map> response = httpFetch.get(
-            this.apiUrl + "/api/quote/" + ticker + "?modules=summaryProfile&fundamental=true",
-            Map.of(
-                    "Authorization", "Bearer " + this.apiToken,
-                    "Accept", "application/json"
-            ),
-            Map.class
-        );
+                this.apiUrl + "/api/quote/" + ticker,
+                Map.of(
+                        "Authorization", "Bearer " + this.apiToken,
+                        "Accept", "application/json"),
+                Map.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "fullStockData", key = "#ticker")
+    public Map<String, Object> getFullStockData(String ticker) {
+        System.out.println("Buscando dados completos da API externa para o ticker: " + ticker);
+
+        ResponseEntity<Map> response = httpFetch.get(
+                this.apiUrl + "/api/quote/" + ticker + "?modules=summaryProfile&fundamental=true",
+                Map.of(
+                        "Authorization", "Bearer " + this.apiToken,
+                        "Accept", "application/json"),
+                Map.class);
 
         return response.getBody();
     }

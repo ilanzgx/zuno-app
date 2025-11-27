@@ -33,28 +33,31 @@ O código-fonte está localizado em `src/` e segue as convenções do App Router
 
 - **`lib/`**: Utilitários, como a função `cn` para mesclar classes do Tailwind CSS.
 
--   **`resources/`**: Contém a lógica de domínio do frontend, incluindo entidades, schemas e serviços para interação com a API.
-    -   **`position`**: Define entidades (`position.entity.ts`) e serviços (`position.service.ts`) para gerenciar as posições de investimento dos usuários.
-    -   **`transaction`**: Define entidades (`transaction.entity.ts`) para representar as transações financeiras.
-    -   **`user`**: Contém entidades (`user.entity.ts`), schemas de validação (`user.schemas.ts`) e serviços (`user.service.ts`) relacionados à autenticação e gerenciamento de usuários.
+- **`resources/`**: Contém a lógica de domínio do frontend, incluindo entidades, schemas e serviços para interação com a API.
+
+  - **`position`**: Define entidades (`position.entity.ts`) e serviços (`position.service.ts`) para gerenciar as posições de investimento dos usuários.
+  - **`transaction`**: Define entidades (`transaction.entity.ts`) para representar as transações financeiras.
+  - **`user`**: Contém entidades (`user.entity.ts`), schemas de validação (`user.schemas.ts`) e serviços (`user.service.ts`) relacionados à autenticação e gerenciamento de usuários.
 
 - **`stores/`**: Contém stores (lojas) de estado global, como `user.store.ts` para dados do usuário, gerenciadas com Zustand.
 
 ## 🚀 Como Começar
 
-1.  **Instalar Dependências:**
-    Navegue até a pasta `apps/web` e execute:
+1. **Instalar Dependências:**
+   Navegue até a pasta `apps/web` e execute:
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
-2.  **Rodar a Aplicação:**
-    Use o script na raiz do monorepo para iniciar o servidor de desenvolvimento:
-    ```bash
-    npm run start:web
-    ```
-    A aplicação estará disponível em `http://localhost:3000`.
+2. **Rodar a Aplicação:**
+   Use o script na raiz do monorepo para iniciar o servidor de desenvolvimento:
+
+   ```bash
+   npm run start:web
+   ```
+
+   A aplicação estará disponível em `http://localhost:3000`.
 
 ## 🎨 Componentes e Estilo
 
