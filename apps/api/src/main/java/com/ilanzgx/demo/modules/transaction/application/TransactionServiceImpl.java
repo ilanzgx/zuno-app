@@ -1,5 +1,7 @@
 package com.ilanzgx.demo.modules.transaction.application;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.ilanzgx.demo.modules.position.domain.services.PositionService;
@@ -38,6 +40,11 @@ public class TransactionServiceImpl implements TransactionService {
         this.positionService.processTransaction(transaction);
 
         return transaction;
+    }
+
+    @Override
+    public List<Transaction> getTransactionsByUser(String userId) {
+        return this.transactionRepository.findAllByUserId(userId);
     }
 
 }

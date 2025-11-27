@@ -1,5 +1,9 @@
 package com.ilanzgx.demo.modules.transaction.infrastructure;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,5 +25,10 @@ public class TransactionController {
     public Transaction createTransaction(@RequestBody CreateTransactionDto createTransactionDto) {
         System.out.println(createTransactionDto);
         return transactionService.createTransaction(createTransactionDto);
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<Transaction> getTransactionsByUser(@PathVariable String userId) {
+        return transactionService.getTransactionsByUser(userId);
     }
 }
