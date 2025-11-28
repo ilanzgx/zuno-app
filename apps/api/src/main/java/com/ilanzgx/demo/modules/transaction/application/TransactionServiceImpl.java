@@ -48,23 +48,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponse> getTransactionsByUser(String userId) {
+    public List<Transaction> getTransactionsByUser(String userId) {
         List<Transaction> transactions = this.transactionRepository.findAllByUserId(userId);
-
-        return transactions.stream().map(transaction -> {
-            Map<String, Object> stockData = this.marketService.getSimpleStockData(transaction.getTicker());
-            System.out.println(stockData);
-
-            return TransactionResponse.builder()
-                .id(transaction.getId())
-                .ticker(transaction.getTicker())
-                .type(transaction.getType().name())
-                .quantity(transaction.getQuantity())
-                .price(transaction.getPrice())
-                .date(transaction.getDate())
-                .stockData(stockData)
-                .build();
-        }).collect(Collectors.toList());
+        return transactions;
     }
 
 }

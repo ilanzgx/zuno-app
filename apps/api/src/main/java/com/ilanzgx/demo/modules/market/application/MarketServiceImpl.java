@@ -29,14 +29,23 @@ public class MarketServiceImpl implements MarketService {
     public Map<String, Object> getSimpleStockData(String ticker) {
         System.out.println("Buscando dados simples da API externa para o ticker: " + ticker);
 
-        ResponseEntity<Map> response = httpFetch.get(
-                this.apiUrl + "/api/quote/" + ticker,
-                Map.of(
-                        "Authorization", "Bearer " + this.apiToken,
-                        "Accept", "application/json"),
-                Map.class);
+        try {
+            ResponseEntity<Map> response = httpFetch.get(
+                    this.apiUrl + "/api/quote/" + ticker,
+                    Map.of(
+                            "Authorization", "Bearer " + this.apiToken,
+                            "Accept", "application/json"),
+                    Map.class);
 
-        return response.getBody();
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar dados para o ticker " + ticker + ": " + e.getMessage());
+            return Map.of(
+                "error", true,
+                "message", "Dado indisponível no momento",
+                "ticker", ticker
+            );
+        }
     }
 
     @Override
@@ -45,14 +54,23 @@ public class MarketServiceImpl implements MarketService {
     public Map<String, Object> getFullStockData(String ticker) {
         System.out.println("Buscando dados completos da API externa para o ticker: " + ticker);
 
-        ResponseEntity<Map> response = httpFetch.get(
-                this.apiUrl + "/api/quote/" + ticker + "?modules=summaryProfile&fundamental=true",
-                Map.of(
-                        "Authorization", "Bearer " + this.apiToken,
-                        "Accept", "application/json"),
-                Map.class);
+        try {
+            ResponseEntity<Map> response = httpFetch.get(
+                    this.apiUrl + "/api/quote/" + ticker + "?modules=summaryProfile&fundamental=true",
+                    Map.of(
+                            "Authorization", "Bearer " + this.apiToken,
+                            "Accept", "application/json"),
+                    Map.class);
 
-        return response.getBody();
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar dados completos para o ticker " + ticker + ": " + e.getMessage());
+            return Map.of(
+                "error", true,
+                "message", "Dado indisponível no momento",
+                "ticker", ticker
+            );
+        }
     }
 
 }

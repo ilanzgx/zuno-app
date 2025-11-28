@@ -29,7 +29,7 @@ public class TransactionController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<TransactionResponse> getTransactionsByUser(@PathVariable String userId) {
+    public List<Transaction> getTransactionsByUser(@PathVariable String userId) {
         return transactionService.getTransactionsByUser(userId);
     }
 }
