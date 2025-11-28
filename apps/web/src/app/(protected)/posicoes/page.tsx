@@ -89,7 +89,6 @@ function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
         <TableRow>
           <TableHead className="w-[60px]"></TableHead>
           <TableHead>Ativo</TableHead>
-          <TableHead>Ordem</TableHead>
           <TableHead>Preço Médio</TableHead>
           <TableHead className="text-right">Quantidade</TableHead>
           <TableHead className="text-right">Preço Atual</TableHead>
@@ -106,7 +105,7 @@ function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
           const currentValue = currentPrice * position.quantity;
           const logoUrl =
             positionData?.logourl || "https://icons.brapi.dev/icons/BRAPI.svg";
-          const shortName = positionData?.shortName || position.ticker;
+          const longName = positionData?.longName || position.ticker;
 
           return (
             <TableRow key={position.id}>
@@ -124,18 +123,10 @@ function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
               <TableCell>
                 <div>
                   <div className="font-bold">{position.ticker}</div>
-                  <div className="text-xs text-muted-foreground truncate max-w-[150px]">
-                    {shortName}
+                  <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                    {longName}
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>
-                <Badge
-                  variant="secondary"
-                  className="font-normal text-muted-foreground bg-secondary/50"
-                >
-                  Compra
-                </Badge>
               </TableCell>
               <TableCell suppressHydrationWarning>
                 {isMounted
@@ -219,7 +210,6 @@ function PositionsTableSkeleton() {
         <TableRow>
           <TableHead className="w-[60px]"></TableHead>
           <TableHead>Ativo</TableHead>
-          <TableHead>Ordem</TableHead>
           <TableHead>Preço Médio</TableHead>
           <TableHead className="text-right">Quantidade</TableHead>
           <TableHead className="text-right">Preço Atual</TableHead>
@@ -237,11 +227,8 @@ function PositionsTableSkeleton() {
             <TableCell>
               <div className="space-y-2">
                 <Skeleton className="h-4 w-16" />
-                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-3 w-32" />
               </div>
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-6 w-16 rounded-full" />
             </TableCell>
             <TableCell>
               <Skeleton className="h-4 w-20" />

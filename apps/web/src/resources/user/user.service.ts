@@ -94,6 +94,31 @@ export async function getProfile(): Promise<AuthResponse | null> {
   return { token, user };
 }
 
+export async function getToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get("token")?.value;
+}
+
+export async function getUserId(): Promise<string | null> {
+  const token = await getToken();
+  if (!token) return null;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const user = await response.json();
+    return user.id;
+  } catch {
+    return null;
+  }
+}
+
 export async function validateToken(): Promise<boolean> {
   const profile = await getProfile();
   return !!profile;
