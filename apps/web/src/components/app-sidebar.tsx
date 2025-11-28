@@ -9,6 +9,9 @@ import {
   Settings,
   LogOut,
   User as UserIcon,
+  Calendar,
+  Plus,
+  FileText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -28,8 +31,8 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/user.store";
 import { useEffect, useState } from "react";
 
-// Menu items.
-const items = [
+// Menu items - Navegação principal
+const navigationItems = [
   {
     title: "Dashboard",
     url: "/dashboard",
@@ -41,9 +44,9 @@ const items = [
     icon: Wallet,
   },
   {
-    title: "Patrimônio",
-    url: "/patrimonio",
-    icon: PieChart,
+    title: "Eventos",
+    url: "/eventos",
+    icon: Calendar,
   },
   {
     title: "Transações",
@@ -54,6 +57,20 @@ const items = [
     title: "Configurações",
     url: "/configuracoes",
     icon: Settings,
+  },
+];
+
+// Ações rápidas
+const actionItems = [
+  {
+    title: "Cadastrar transação",
+    url: "/transacoes/nova",
+    icon: Plus,
+  },
+  {
+    title: "Gerar relatório",
+    url: "/relatorios",
+    icon: FileText,
   },
 ];
 
@@ -93,10 +110,28 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild size="sm" className="h-9">
+                    <a href={item.url} className="text-sm font-medium">
+                      <item.icon className="size-4" />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Ações</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {actionItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild size="sm" className="h-9">
                     <a href={item.url} className="text-sm font-medium">
