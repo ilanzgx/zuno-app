@@ -1,8 +1,10 @@
 package com.ilanzgx.demo.modules.user.domain;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -36,6 +38,10 @@ public class User implements UserDetails {
 
     @Column
     private String password;
+
+    @CreationTimestamp
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
     // UserDetails methods
     @Override

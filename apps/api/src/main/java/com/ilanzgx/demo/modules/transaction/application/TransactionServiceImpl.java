@@ -34,14 +34,14 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = Transaction.builder()
             .ticker(createTransactionDto.ticker())
             .type(createTransactionDto.type())
+            .assetType(createTransactionDto.assetType())
             .quantity(createTransactionDto.quantity())
             .price(createTransactionDto.price())
             .date(createTransactionDto.date())
             .user(user)
-                .build();
+            .build();
 
         this.transactionRepository.save(transaction);
-
         this.positionService.processTransaction(transaction);
 
         return transaction;

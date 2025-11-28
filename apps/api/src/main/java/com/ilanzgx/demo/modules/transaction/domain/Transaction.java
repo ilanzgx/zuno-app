@@ -2,6 +2,9 @@ package com.ilanzgx.demo.modules.transaction.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.ilanzgx.demo.modules.user.domain.User;
 
@@ -43,6 +46,10 @@ public class Transaction {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransactionAssetType assetType;
+
     @Column(nullable = false)
     private BigDecimal price;
 
@@ -52,4 +59,8 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @CreationTimestamp
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 }
