@@ -57,7 +57,7 @@ export default function Dashboard() {
       try {
         const data = await getTransactionsByUser();
         const sortedData = (data || []).sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         setTransactions(sortedData.slice(0, 5));
       } catch (error) {

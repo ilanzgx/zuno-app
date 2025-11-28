@@ -4,6 +4,8 @@ export interface Transaction {
   quantity: number;
   price: number;
   type: "BUY" | "SELL";
+  assetType: "STOCK" | "FII" | "BDR";
   date: Date;
-  user_id: string;
+  userId: string;
+  createdAt: Date;
 }
