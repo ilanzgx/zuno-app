@@ -136,13 +136,11 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   size="sm"
-                  className="h-9"
+                  className="h-9 cursor-pointer font-medium"
                   onClick={() => setIsTransactionDialogOpen(true)}
                 >
                   <Plus className="size-4" />
-                  <span className=" text-sm font-medium">
-                    Cadastrar transação
-                  </span>
+                  <span className="text-xs">Cadastrar transação</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -169,7 +167,7 @@ export function AppSidebar() {
                 <UserIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span
+                <div
                   className="truncate font-semibold"
                   suppressHydrationWarning
                 >
@@ -178,10 +176,10 @@ export function AppSidebar() {
                   ) : (
                     <Skeleton className="h-4 w-24 my-1" />
                   )}
-                </span>
-                <span className="truncate text-xs" suppressHydrationWarning>
+                </div>
+                <div className="truncate text-xs" suppressHydrationWarning>
                   {isMounted ? user?.email : <Skeleton className="h-3 w-32" />}
-                </span>
+                </div>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

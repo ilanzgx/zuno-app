@@ -18,11 +18,6 @@ import Image from "next/image";
 export default function PosicoesPage() {
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     async function fetchPositions() {
@@ -59,7 +54,7 @@ export default function PosicoesPage() {
           {loading ? (
             <PositionsTableSkeleton />
           ) : (
-            <TransactionsTable positions={positions} isMounted={isMounted} />
+            <TransactionsTable positions={positions} />
           )}
         </div>
       </div>
@@ -69,10 +64,9 @@ export default function PosicoesPage() {
 
 interface TransactionsTableProps {
   positions: Position[];
-  isMounted: boolean;
 }
 
-function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
+function TransactionsTable({ positions }: TransactionsTableProps) {
   const displayPositions = positions.slice(0, 10);
 
   if (displayPositions.length === 0) {
@@ -128,38 +122,26 @@ function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
                   </div>
                 </div>
               </TableCell>
-              <TableCell suppressHydrationWarning>
-                {isMounted
-                  ? new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(position.averagePrice)
-                  : "R$ -"}
+              <TableCell>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(position.averagePrice)}
               </TableCell>
               <TableCell className="text-right">{position.quantity}</TableCell>
-              <TableCell className="text-right" suppressHydrationWarning>
-                {isMounted
-                  ? new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(currentPrice)
-                  : "R$ -"}
+              <TableCell className="text-right">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(currentPrice)}
               </TableCell>
-              <TableCell
-                className="text-right font-medium"
-                suppressHydrationWarning
-              >
-                {isMounted
-                  ? new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(totalInvested)
-                  : "R$ -"}
+              <TableCell className="text-right font-medium">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(totalInvested)}
               </TableCell>
-              <TableCell
-                className="text-right font-medium"
-                suppressHydrationWarning
-              >
+              <TableCell className="text-right font-medium">
                 <div
                   className={
                     currentValue >= totalInvested
@@ -167,12 +149,10 @@ function TransactionsTable({ positions, isMounted }: TransactionsTableProps) {
                       : "text-red-600"
                   }
                 >
-                  {isMounted
-                    ? new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(currentValue)
-                    : "R$ -"}
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(currentValue)}
                 </div>
               </TableCell>
               <TableCell>

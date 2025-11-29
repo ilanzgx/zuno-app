@@ -57,7 +57,8 @@ export default function Dashboard() {
       try {
         const data = await getTransactionsByUser();
         const sortedData = (data || []).sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         setTransactions(sortedData.slice(0, 5));
       } catch (error) {
@@ -290,17 +291,12 @@ export default function Dashboard() {
                         <div className="font-semibold">
                           {transaction.ticker}
                         </div>
-                        <div
-                          className="text-sm text-muted-foreground"
-                          suppressHydrationWarning
-                        >
-                          {isMounted
-                            ? new Intl.DateTimeFormat("pt-BR", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              }).format(new Date(transaction.date))
-                            : "-"}
+                        <div className="text-sm text-muted-foreground">
+                          {new Intl.DateTimeFormat("pt-BR", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          }).format(new Date(transaction.date))}
                         </div>
                       </div>
                     </div>
@@ -316,13 +312,11 @@ export default function Dashboard() {
                         {isBuy ? "Compra" : "Venda"}
                       </Badge>
                       <div className="text-right min-w-[100px]">
-                        <div className="font-semibold" suppressHydrationWarning>
-                          {isMounted
-                            ? new Intl.NumberFormat("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              }).format(totalValue)
-                            : "R$ -"}
+                        <div className="font-semibold">
+                          {new Intl.NumberFormat("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          }).format(totalValue)}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {transaction.quantity}{" "}

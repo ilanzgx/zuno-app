@@ -20,19 +20,15 @@ export default function TransacoesPage() {
     Transaction[]
   >([]);
   const [loading, setLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     async function fetchTransactions() {
       try {
         const data = await getTransactionsByUser();
         const sortedData = (data || []).sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         setTransactions(sortedData);
         setFilteredTransactions(sortedData);
@@ -83,10 +79,7 @@ export default function TransacoesPage() {
           {loading ? (
             <TransactionsTableSkeleton />
           ) : (
-            <TransactionsTable
-              transactions={filteredTransactions}
-              isMounted={isMounted}
-            />
+            <TransactionsTable transactions={filteredTransactions} />
           )}
         </div>
       </div>
@@ -96,13 +89,9 @@ export default function TransacoesPage() {
 
 interface TransactionsTableProps {
   transactions: Transaction[];
-  isMounted: boolean;
 }
 
-function TransactionsTable({
-  transactions,
-  isMounted,
-}: TransactionsTableProps) {
+function TransactionsTable({ transactions }: TransactionsTableProps) {
   if (transactions.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground">
@@ -112,7 +101,6 @@ function TransactionsTable({
   }
 
   const formatDate = (date: Date) => {
-    if (!isMounted) return "-";
     return new Intl.DateTimeFormat("pt-BR", {
       day: "2-digit",
       month: "2-digit",
@@ -121,7 +109,6 @@ function TransactionsTable({
   };
 
   const formatCurrency = (value: number) => {
-    if (!isMounted) return "R$ -";
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
@@ -149,9 +136,7 @@ function TransactionsTable({
 
           return (
             <TableRow key={transaction.id}>
-              <TableCell suppressHydrationWarning>
-                {formatDate(transaction.date)}
-              </TableCell>
+              <TableCell>{formatDate(transaction.date)}</TableCell>
               <TableCell>
                 <div className="font-bold">{transaction.ticker}</div>
               </TableCell>
@@ -167,19 +152,14 @@ function TransactionsTable({
                   {isBuy ? "Compra" : "Venda"}
                 </Badge>
               </TableCell>
-              <TableCell suppressHydrationWarning>
-                {formatDate(transaction.date)}
-              </TableCell>
+              <TableCell>{formatDate(transaction.date)}</TableCell>
               <TableCell className="text-right">
                 {transaction.quantity}
               </TableCell>
-              <TableCell className="text-right" suppressHydrationWarning>
+              <TableCell className="text-right">
                 {formatCurrency(transaction.price)}
               </TableCell>
-              <TableCell
-                className="text-right font-medium"
-                suppressHydrationWarning
-              >
+              <TableCell className="text-right font-medium">
                 {formatCurrency(totalValue)}
               </TableCell>
               <TableCell>
