@@ -32,6 +32,14 @@ services:
     volumes:
       - ./apps/api/src/main/resources/application.properties:/app/application.properties
 
+  market:
+    build:
+      context: ./apps/market
+      dockerfile: Dockerfile
+    ports:
+      - "18000:8000"
+    restart: unless-stopped
+
   database:
     image: postgres
     ports:
