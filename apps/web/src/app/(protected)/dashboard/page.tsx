@@ -15,12 +15,14 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Line,
-  LineChart,
+  PieChart,
+  Pie,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
+  Legend,
 } from "recharts";
 import { getTransactionsByUser } from "@/resources/transaction/transaction.service";
 import { Transaction } from "@/resources/transaction/transaction.entity";
@@ -36,14 +38,23 @@ const dataPatrimonio = [
   { name: "Jun", valor: 22000 },
 ];
 
-const dataRentabilidade = [
-  { name: "Jan", valor: 1.2 },
-  { name: "Fev", valor: 2.5 },
-  { name: "Mar", valor: -0.5 },
-  { name: "Abr", valor: 3.0 },
-  { name: "Mai", valor: 2.1 },
-  { name: "Jun", valor: 4.5 },
+const COLORS = [
+  "#EC4899",
+  "#8B5CF6",
+  "#3B82F6",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
 ];
+
+const translateAssetType = (type: string): string => {
+  const translations: Record<string, string> = {
+    STOCK: "Ações",
+    FII: "Fundos imobiliários",
+    BDR: "BDR",
+  };
+  return translations[type] || type;
+};
 
 export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -179,53 +190,100 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="col-span-1">
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="col-span-2">
           <CardHeader>
-            <CardTitle>Histórico Patrimonial</CardTitle>
+            <CardTitle>Patrimonio histórico</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             {loadingSummary ? (
-              <div className="h-[300px] flex items-center justify-center">
+              <div className="h-[350px] flex items-center justify-center">
                 <div className="space-y-3 w-full">
                   <Skeleton className="h-8 w-32" />
-                  <Skeleton className="h-[250px] w-full" />
+                  <Skeleton className="h-[300px] w-full" />
                 </div>
               </div>
             ) : (
-              <div className="h-[300px]">
+              <div className="h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
                     data={dataPatrimonio}
                     margin={{
-                      top: 10,
+                      top: 20,
                       right: 30,
                       left: 0,
-                      bottom: 0,
+                      bottom: 20,
                     }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <defs>
+                      <linearGradient
+                        id="colorValor"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#3B82F6"
+                          stopOpacity={0.1}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3B82F6"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#E5E7EB"
+                    />
                     <XAxis
                       dataKey="name"
-                      stroke="#888888"
-                      fontSize={12}
+                      stroke="#9CA3AF"
+                      fontSize={11}
                       tickLine={false}
                       axisLine={false}
+                      dy={10}
                     />
                     <YAxis
-                      stroke="#888888"
-                      fontSize={12}
+                      stroke="#9CA3AF"
+                      fontSize={11}
                       tickLine={false}
                       axisLine={false}
-                      tickFormatter={(value) => `R$${value}`}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                      dx={-10}
                     />
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.95)",
+                        border: "1px solid #E5E7EB",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      }}
+                      formatter={(value: number) =>
+                        new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(value)
+                      }
+                      labelStyle={{ color: "#374151", fontWeight: 600 }}
+                    />
                     <Area
                       type="monotone"
                       dataKey="valor"
-                      stroke="#8884d8"
-                      fill="#8884d8"
-                      fillOpacity={0.2}
+                      stroke="#3B82F6"
+                      strokeWidth={2.5}
+                      fill="url(#colorValor)"
+                      dot={false}
+                      activeDot={{
+                        r: 5,
+                        fill: "#3B82F6",
+                        strokeWidth: 2,
+                        stroke: "#fff",
+                      }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -235,53 +293,72 @@ export default function Dashboard() {
         </Card>
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Rentabilidade Histórica</CardTitle>
+            <CardTitle>Distribuição de Ativos</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             {loadingSummary ? (
-              <div className="h-[300px] flex items-center justify-center">
+              <div className="h-[350px] flex items-center justify-center">
                 <div className="space-y-3 w-full">
                   <Skeleton className="h-8 w-32" />
-                  <Skeleton className="h-[250px] w-full" />
+                  <Skeleton className="h-[300px] w-full" />
                 </div>
               </div>
-            ) : (
-              <div className="h-[300px]">
+            ) : summary &&
+              summary.allocation &&
+              summary.allocation.length > 0 ? (
+              <div className="h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={dataRentabilidade}
-                    margin={{
-                      top: 10,
-                      right: 30,
-                      left: 0,
-                      bottom: 0,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="name"
-                      stroke="#888888"
+                  <PieChart>
+                    <Pie
+                      data={[...summary.allocation].sort(
+                        (a, b) => b.percentage - a.percentage
+                      )}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={80}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ percent }) => `${(percent! * 100).toFixed(1)}%`}
+                      labelLine={false}
                       fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
+                    >
+                      {[...summary.allocation]
+                        .sort((a, b) => b.percentage - a.percentage)
+                        .map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                    </Pie>
+                    <Legend
+                      verticalAlign="bottom"
+                      height={36}
+                      wrapperStyle={{ fontSize: "12px" }}
+                      formatter={(value, entry: any) => {
+                        const sortedAllocation = [...summary.allocation].sort(
+                          (a, b) => b.percentage - a.percentage
+                        );
+                        const item = sortedAllocation.find(
+                          (a) => a.value === entry.payload.value
+                        );
+                        return `${translateAssetType(
+                          item?.type || value
+                        )} - ${new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(item?.value || 0)}`;
+                      }}
                     />
-                    <YAxis
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `${value}%`}
-                    />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="valor"
-                      stroke="#82ca9d"
-                      strokeWidth={2}
-                      activeDot={{ r: 8 }}
-                    />
-                  </LineChart>
+                  </PieChart>
                 </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[350px] flex items-center justify-center">
+                <p className="text-muted-foreground">
+                  Nenhum ativo na carteira
+                </p>
               </div>
             )}
           </CardContent>
