@@ -24,7 +24,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final PositionService positionService;
-    private final MarketService marketService;
 
     @Override
     public Transaction createTransaction(CreateTransactionDto createTransactionDto) {

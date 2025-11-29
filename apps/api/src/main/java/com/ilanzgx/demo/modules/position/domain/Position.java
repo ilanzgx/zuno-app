@@ -2,10 +2,13 @@ package com.ilanzgx.demo.modules.position.domain;
 
 import java.math.BigDecimal;
 
+import com.ilanzgx.demo.modules.shared.domain.AssetType;
 import com.ilanzgx.demo.modules.user.domain.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +38,10 @@ public class Position {
 
     @Column
     private Integer quantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AssetType assetType;
 
     @Column(precision = 19, scale = 2)
     private BigDecimal averagePrice;

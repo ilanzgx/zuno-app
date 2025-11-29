@@ -42,6 +42,7 @@ public class PositionServiceImpl implements PositionService {
         Position position = Position.builder()
             .ticker(positionRequest.ticker())
             .quantity(positionRequest.quantity())
+            .assetType(positionRequest.assetType())
             .propertyOwner(userPropertyOwner)
             .build();
 
@@ -74,6 +75,7 @@ public class PositionServiceImpl implements PositionService {
             .id(position.getId())
             .ticker(positionRequest.ticker())
             .quantity(positionRequest.quantity())
+            .assetType(positionRequest.assetType())
             .propertyOwner(userPropertyOwner)
             .build();
 
@@ -118,8 +120,13 @@ public class PositionServiceImpl implements PositionService {
                         .propertyOwner(tx.getUser())
                         .ticker(tx.getTicker())
                         .quantity(0)
+                        .assetType(tx.getAssetType())
                         .averagePrice(BigDecimal.ZERO)
                         .build());
+
+        if (position.getAssetType() == null) {
+            position.setAssetType(tx.getAssetType());
+        }
 
         if (tx.getType() == TransactionType.BUY) {
             handleBuy(position, tx);

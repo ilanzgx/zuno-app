@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.ilanzgx.demo.modules.shared.domain.AssetType;
 import com.ilanzgx.demo.modules.user.domain.User;
 
 import jakarta.persistence.Column;
@@ -48,7 +49,7 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionAssetType assetType;
+    private AssetType assetType;
 
     @Column(nullable = false)
     private BigDecimal price;

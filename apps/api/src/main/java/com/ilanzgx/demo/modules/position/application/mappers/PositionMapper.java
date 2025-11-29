@@ -19,6 +19,7 @@ public class PositionMapper {
         return Position.builder()
             .ticker(positionRequest.ticker())
             .quantity(positionRequest.quantity())
+            .assetType(positionRequest.assetType())
             .propertyOwner(propertyOwner)
             .build();
     }
@@ -28,6 +29,7 @@ public class PositionMapper {
             .id(position.getId())
             .ticker(position.getTicker())
             .quantity(position.getQuantity())
+            .assetType(position.getAssetType())
             .averagePrice(position.getAveragePrice())
             .user(userMapper.toResponse(position.getPropertyOwner()))
             .build();
@@ -53,6 +55,7 @@ public class PositionMapper {
                 .id(position.getId())
                 .ticker(position.getTicker())
                 .quantity(position.getQuantity())
+                .assetType(position.getAssetType())
                 .averagePrice(position.getAveragePrice())
                 .positionData(positionData)
                 .build();
