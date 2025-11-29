@@ -1,7 +1,7 @@
 from fastapi import FastAPI
+from src.api.v1 import b3_quote, b3_dividends
 
 app = FastAPI(title="Market API", version="0.1.0")
 
-@app.get("/")
-async def read_root():
-    return {"message": "Hello, FastAPI with uv!"}
+app.include_router(b3_quote.router, tags=["B3 Quotes"])
+app.include_router(b3_dividends.router, tags=["B3 Dividends"])
