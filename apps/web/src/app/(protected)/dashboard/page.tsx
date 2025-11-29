@@ -102,7 +102,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-2xl font-bold tracking-tight">
           Resumo da carteira
         </h1>
         <p className="text-muted-foreground">
@@ -110,13 +110,14 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-2 md:grid-cols-3">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Saldo Bruto</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
           <CardContent>
+            <div className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm font-medium">Saldo Bruto</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </div>
+
             {loadingSummary ? (
               <div className="space-y-2">
                 <Skeleton className="h-8 w-[140px]" />
@@ -139,13 +140,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Valor Aplicado
-            </CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
           <CardContent>
+            <div className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm font-medium">
+                Valor Aplicado
+              </CardTitle>
+              <Wallet className="h-4 w-4 text-muted-foreground" />
+            </div>
             {loadingSummary ? (
               <div className="space-y-2">
                 <Skeleton className="h-8 w-[140px]" />
@@ -164,11 +165,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rentabilidade</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
           <CardContent>
+            <div className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm font-medium">
+                Rentabilidade
+              </CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </div>
             {loadingSummary ? (
               <div className="space-y-2">
                 <Skeleton className="h-8 w-[100px]" />
@@ -197,10 +200,22 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="pl-2">
             {loadingSummary ? (
-              <div className="h-[350px] flex items-center justify-center">
-                <div className="space-y-3 w-full">
-                  <Skeleton className="h-8 w-32" />
-                  <Skeleton className="h-[300px] w-full" />
+              <div className="h-[350px] flex flex-col justify-between p-4">
+                <div className="flex-1 flex items-end justify-between gap-2">
+                  <Skeleton className="h-[60%] w-[14%]" />
+                  <Skeleton className="h-[75%] w-[14%]" />
+                  <Skeleton className="h-[65%] w-[14%]" />
+                  <Skeleton className="h-[85%] w-[14%]" />
+                  <Skeleton className="h-[90%] w-[14%]" />
+                  <Skeleton className="h-full w-[14%]" />
+                </div>
+                <div className="flex justify-between mt-2">
+                  <Skeleton className="h-3 w-8" />
+                  <Skeleton className="h-3 w-8" />
+                  <Skeleton className="h-3 w-8" />
+                  <Skeleton className="h-3 w-8" />
+                  <Skeleton className="h-3 w-8" />
+                  <Skeleton className="h-3 w-8" />
                 </div>
               </div>
             ) : (
@@ -297,10 +312,16 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="pl-2">
             {loadingSummary ? (
-              <div className="h-[350px] flex items-center justify-center">
-                <div className="space-y-3 w-full">
-                  <Skeleton className="h-8 w-32" />
-                  <Skeleton className="h-[300px] w-full" />
+              <div className="h-[350px] flex flex-col items-center justify-center gap-4 p-4">
+                <div className="relative w-48 h-48">
+                  <Skeleton className="w-full h-full rounded-full" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-32 h-32 bg-background rounded-full" />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2 w-full">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
                 </div>
               </div>
             ) : summary &&
@@ -412,7 +433,7 @@ export default function Dashboard() {
               <p>Nenhuma transação encontrada.</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {transactions.map((transaction) => {
                 const isBuy = transaction.type === "BUY";
                 const totalValue = transaction.price * transaction.quantity;

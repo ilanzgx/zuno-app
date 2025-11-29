@@ -45,6 +45,11 @@ const navigationItems = [
     icon: Wallet,
   },
   {
+    title: "Patrimônio",
+    url: "/patrimonio",
+    icon: PieChart,
+  },
+  {
     title: "Eventos",
     url: "/eventos",
     icon: Calendar,
