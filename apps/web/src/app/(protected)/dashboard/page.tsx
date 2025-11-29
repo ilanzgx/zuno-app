@@ -24,6 +24,8 @@ import {
 } from "recharts";
 import { getTransactionsByUser } from "@/resources/transaction/transaction.service";
 import { Transaction } from "@/resources/transaction/transaction.entity";
+import { getSummary } from "@/resources/portfolio/portfolio.service";
+import { PortfolioSummary } from "@/resources/portfolio/portfolio.types";
 
 const dataPatrimonio = [
   { name: "Jan", valor: 10000 },
@@ -44,32 +46,47 @@ const dataRentabilidade = [
 ];
 
 export default function Dashboard() {
-  const [isMounted, setIsMounted] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
+  const [loadingSummary, setLoadingSummary] = useState(true);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    async function fetchTransactions() {
+    async function fetchData() {
       try {
-        const data = await getTransactionsByUser();
-        const sortedData = (data || []).sort(
+        const [transactionsData, summaryData] = await Promise.all([
+          getTransactionsByUser(),
+          getSummary(),
+        ]);
+
+        const sortedData = (transactionsData || []).sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         setTransactions(sortedData.slice(0, 5));
+        setSummary(summaryData);
       } catch (error) {
-        console.error("Failed to fetch transactions:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoadingTransactions(false);
+        setLoadingSummary(false);
       }
     }
 
-    fetchTransactions();
+    fetchData();
   }, []);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  const formatPercentage = (value: number) => {
+    const sign = value >= 0 ? "+" : "";
+    return `${sign}${value.toFixed(2)}%`;
+  };
 
   return (
     <div className="space-y-6">
@@ -89,10 +106,25 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$ 45.231,89</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% em relação ao mês passado
-            </p>
+            {loadingSummary ? (
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-[140px]" />
+                <Skeleton className="h-4 w-[180px]" />
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {summary ? formatCurrency(summary.grossBalance) : "R$ 0,00"}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {summary && summary.profitOrLoss !== 0
+                    ? `${formatCurrency(Math.abs(summary.profitOrLoss))} ${
+                        summary.profitOrLoss >= 0 ? "de lucro" : "de prejuízo"
+                      }`
+                    : "Sem variação"}
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -103,10 +135,21 @@ export default function Dashboard() {
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$ 38.000,00</div>
-            <p className="text-xs text-muted-foreground">
-              +12% em relação ao mês passado
-            </p>
+            {loadingSummary ? (
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-[140px]" />
+                <Skeleton className="h-4 w-[120px]" />
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {summary ? formatCurrency(summary.appliedBalance) : "R$ 0,00"}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Total investido em ativos
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -115,21 +158,41 @@ export default function Dashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+19,03%</div>
-            <p className="text-xs text-muted-foreground">
-              +4% em relação ao mês passado
-            </p>
+            {loadingSummary ? (
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-[100px]" />
+                <Skeleton className="h-4 w-[160px]" />
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {summary
+                    ? formatPercentage(summary.percentageProfit)
+                    : "0,00%"}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Retorno sobre o valor aplicado
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {isMounted && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="col-span-1">
-            <CardHeader>
-              <CardTitle>Histórico Patrimonial</CardTitle>
-            </CardHeader>
-            <CardContent className="pl-2">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Histórico Patrimonial</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            {loadingSummary ? (
+              <div className="h-[300px] flex items-center justify-center">
+                <div className="space-y-3 w-full">
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-[250px] w-full" />
+                </div>
+              </div>
+            ) : (
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
@@ -167,13 +230,22 @@ export default function Dashboard() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="col-span-1">
-            <CardHeader>
-              <CardTitle>Rentabilidade Histórica</CardTitle>
-            </CardHeader>
-            <CardContent className="pl-2">
+            )}
+          </CardContent>
+        </Card>
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Rentabilidade Histórica</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            {loadingSummary ? (
+              <div className="h-[300px] flex items-center justify-center">
+                <div className="space-y-3 w-full">
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-[250px] w-full" />
+                </div>
+              </div>
+            ) : (
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
@@ -211,10 +283,10 @@ export default function Dashboard() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Recent Transactions Section */}
       <Card>
