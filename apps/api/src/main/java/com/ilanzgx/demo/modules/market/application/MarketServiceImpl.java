@@ -23,6 +23,9 @@ public class MarketServiceImpl implements MarketService {
     @Value("${BRAPI_TOKEN}")
     private String apiToken;
 
+    @Value("${market.microservice.url}")
+    private String marketMicroserviceUrl;
+
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Cacheable(value = "simpleStockData", key = "#ticker")
@@ -66,10 +69,31 @@ public class MarketServiceImpl implements MarketService {
         } catch (Exception e) {
             System.err.println("Erro ao buscar dados completos para o ticker " + ticker + ": " + e.getMessage());
             return Map.of(
-                "error", true,
-                "message", "Dado indisponível no momento",
-                "ticker", ticker
-            );
+                    "error", true,
+                    "message", "Dado indisponível no momento",
+                    "ticker", ticker);
+        }
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "stockDividendsData", key = "#ticker")
+    public Map<String, Object> getStockDividendsData(String ticker) {
+        System.out.println("Buscando dados de dividendos através do microserviço para o ticker: " + ticker);
+
+        try {
+            ResponseEntity<Map> response = httpFetch.get(
+                    this.marketMicroserviceUrl + "/b3/dividends/" + ticker,
+                    Map.of("Accept", "application/json"),
+                    Map.class);
+
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar dados completos para o ticker " + ticker + ": " + e.getMessage());
+            return Map.of(
+                    "error", true,
+                    "message", "Dado indisponível no momento",
+                    "ticker", ticker);
         }
     }
 

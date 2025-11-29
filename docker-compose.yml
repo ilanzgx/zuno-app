@@ -22,6 +22,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      market:
+        condition: service_started
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -29,6 +31,7 @@ services:
       - SPRING_CONFIG_LOCATION=file:/app/application.properties
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - MARKET_SERVICE_URL=http://market:8000
     volumes:
       - ./apps/api/src/main/resources/application.properties:/app/application.properties
 
