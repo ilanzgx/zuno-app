@@ -59,25 +59,6 @@ const navigationItems = [
     url: "/transacoes",
     icon: ArrowLeftRight,
   },
-  {
-    title: "Configurações",
-    url: "/configuracoes",
-    icon: Settings,
-  },
-];
-
-// Ações rápidas
-const actionItems = [
-  {
-    title: "Cadastrar transação",
-    url: "/transacoes/nova",
-    icon: Plus,
-  },
-  {
-    title: "Gerar relatório",
-    url: "/relatorios",
-    icon: FileText,
-  },
 ];
 
 export function AppSidebar() {
@@ -148,11 +129,21 @@ export function AppSidebar() {
                   <span className="text-xs">Cadastrar transação</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild size="sm" className="h-9">
                   <a href="/relatorios" className="text-sm font-medium">
                     <FileText className="size-4" />
                     <span>Gerar relatório</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild size="sm" className="h-9">
+                  <a href="/configuracoes" className="text-sm font-medium">
+                    <Settings className="size-4" />
+                    <span>Configurações</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -165,27 +156,34 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
+              asChild
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <UserIcon className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <div
-                  className="truncate font-semibold"
-                  suppressHydrationWarning
-                >
-                  {isMounted ? (
-                    user?.name
-                  ) : (
-                    <Skeleton className="h-4 w-24 my-1" />
-                  )}
+              <a href="/conta">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                  <UserIcon className="size-4" />
                 </div>
-                <div className="truncate text-xs" suppressHydrationWarning>
-                  {isMounted ? user?.email : <Skeleton className="h-3 w-32" />}
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <div
+                    className="truncate font-semibold"
+                    suppressHydrationWarning
+                  >
+                    {isMounted ? (
+                      user?.name
+                    ) : (
+                      <Skeleton className="h-4 w-24 my-1" />
+                    )}
+                  </div>
+                  <div className="truncate text-xs" suppressHydrationWarning>
+                    {isMounted ? (
+                      user?.email
+                    ) : (
+                      <Skeleton className="h-3 w-32" />
+                    )}
+                  </div>
                 </div>
-              </div>
+              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
