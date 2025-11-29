@@ -40,3 +40,32 @@ export async function getTransactionsByUser(): Promise<Transaction[] | null> {
     return null;
   }
 }
+
+export async function createTransaction(transaction: Transaction) {
+  const token = await getToken();
+  const userId = await getUserId();
+
+  if (!token || !userId) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/transactions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(transaction),
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Failed to create transaction:", error);
+    return null;
+  }
+}

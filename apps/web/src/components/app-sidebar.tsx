@@ -30,6 +30,7 @@ import { signOut } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/user.store";
 import { useEffect, useState } from "react";
+import { CreateTransactionDialog } from "@/components/create-transaction-dialog";
 
 // Menu items - Navegação principal
 const navigationItems = [
@@ -78,6 +79,7 @@ export function AppSidebar() {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
   const [isMounted, setIsMounted] = useState(false);
+  const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -131,16 +133,26 @@ export function AppSidebar() {
           <SidebarGroupLabel>Ações</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {actionItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild size="sm" className="h-9">
-                    <a href={item.url} className="text-sm font-medium">
-                      <item.icon className="size-4" />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size="sm"
+                  className="h-9"
+                  onClick={() => setIsTransactionDialogOpen(true)}
+                >
+                  <Plus className="size-4" />
+                  <span className=" text-sm font-medium">
+                    Cadastrar transação
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild size="sm" className="h-9">
+                  <a href="/relatorios" className="text-sm font-medium">
+                    <FileText className="size-4" />
+                    <span>Gerar relatório</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -184,6 +196,11 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      <CreateTransactionDialog
+        open={isTransactionDialogOpen}
+        onOpenChange={setIsTransactionDialogOpen}
+      />
     </Sidebar>
   );
 }
