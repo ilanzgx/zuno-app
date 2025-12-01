@@ -26,7 +26,7 @@ export async function signIn(credentials: SignInDTO): Promise<AuthResponse> {
   const cookieStore = await cookies();
   cookieStore.set("token", data.token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
@@ -56,7 +56,7 @@ export async function signUp(credentials: SignUpDTO): Promise<AuthResponse> {
   const cookieStore = await cookies();
   cookieStore.set("token", data.token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
