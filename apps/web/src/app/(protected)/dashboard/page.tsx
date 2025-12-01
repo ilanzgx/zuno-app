@@ -30,12 +30,12 @@ import { getSummary } from "@/resources/portfolio/portfolio.service";
 import { PortfolioSummary } from "@/resources/portfolio/portfolio.types";
 
 const dataPatrimonio = [
-  { name: "Jan", valor: 10000 },
-  { name: "Fev", valor: 12000 },
-  { name: "Mar", valor: 11500 },
-  { name: "Abr", valor: 15000 },
-  { name: "Mai", valor: 18000 },
-  { name: "Jun", valor: 22000 },
+  { name: "Jan", patrimoniobruto: 10000, valorInvestido: 8000 },
+  { name: "Fev", patrimoniobruto: 12000, valorInvestido: 9500 },
+  { name: "Mar", patrimoniobruto: 11500, valorInvestido: 9800 },
+  { name: "Abr", patrimoniobruto: 15000, valorInvestido: 11000 },
+  { name: "Mai", patrimoniobruto: 18000, valorInvestido: 13000 },
+  { name: "Jun", patrimoniobruto: 22000, valorInvestido: 15000 },
 ];
 
 const COLORS = [
@@ -200,22 +200,64 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="pl-2">
             {loadingSummary ? (
-              <div className="h-[350px] flex flex-col justify-between p-4">
-                <div className="flex-1 flex items-end justify-between gap-2">
-                  <Skeleton className="h-[60%] w-[14%]" />
-                  <Skeleton className="h-[75%] w-[14%]" />
-                  <Skeleton className="h-[65%] w-[14%]" />
-                  <Skeleton className="h-[85%] w-[14%]" />
-                  <Skeleton className="h-[90%] w-[14%]" />
-                  <Skeleton className="h-full w-[14%]" />
+              <div className="h-[350px] flex flex-col p-4 pt-2">
+                {/* Legend skeleton */}
+                <div className="flex items-center justify-center gap-6 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
                 </div>
-                <div className="flex justify-between mt-2">
-                  <Skeleton className="h-3 w-8" />
-                  <Skeleton className="h-3 w-8" />
-                  <Skeleton className="h-3 w-8" />
-                  <Skeleton className="h-3 w-8" />
-                  <Skeleton className="h-3 w-8" />
-                  <Skeleton className="h-3 w-8" />
+
+                {/* Chart area skeleton */}
+                <div className="flex-1 flex flex-col justify-between">
+                  {/* Y-axis labels */}
+                  <div className="flex items-start">
+                    <div className="flex flex-col justify-between h-[240px] mr-2">
+                      <Skeleton className="h-3 w-6" />
+                      <Skeleton className="h-3 w-6" />
+                      <Skeleton className="h-3 w-6" />
+                      <Skeleton className="h-3 w-6" />
+                      <Skeleton className="h-3 w-6" />
+                    </div>
+
+                    {/* Mountain chart skeleton - two overlapping areas */}
+                    <div className="flex-1 relative h-[240px]">
+                      {/* Upper area (Patrimônio Bruto) */}
+                      <div className="absolute inset-0 flex items-end justify-between gap-1 px-2">
+                        <Skeleton className="h-[45%] w-[14%] rounded-t-sm bg-gray-400" />
+                        <Skeleton className="h-[60%] w-[14%] rounded-t-sm bg-gray-400" />
+                        <Skeleton className="h-[55%] w-[14%] rounded-t-sm bg-gray-400" />
+                        <Skeleton className="h-[75%] w-[14%] rounded-t-sm bg-gray-400" />
+                        <Skeleton className="h-[85%] w-[14%] rounded-t-sm bg-gray-400" />
+                        <Skeleton className="h-full w-[14%] rounded-t-sm bg-gray-400" />
+                      </div>
+
+                      {/* Lower area (Valor Investido) - slightly transparent effect */}
+                      <div className="absolute inset-0 flex items-end justify-between gap-1 px-2 opacity-60">
+                        <Skeleton className="h-[35%] w-[14%] rounded-t-sm" />
+                        <Skeleton className="h-[48%] w-[14%] rounded-t-sm" />
+                        <Skeleton className="h-[45%] w-[14%] rounded-t-sm" />
+                        <Skeleton className="h-[58%] w-[14%] rounded-t-sm" />
+                        <Skeleton className="h-[68%] w-[14%] rounded-t-sm" />
+                        <Skeleton className="h-[80%] w-[14%] rounded-t-sm" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* X-axis labels */}
+                  <div className="flex justify-between mt-3 pl-8">
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-8" />
+                  </div>
                 </div>
               </div>
             ) : (
@@ -232,7 +274,7 @@ export default function Dashboard() {
                   >
                     <defs>
                       <linearGradient
-                        id="colorValor"
+                        id="colorPatrimonioBruto"
                         x1="0"
                         y1="0"
                         x2="0"
@@ -241,12 +283,30 @@ export default function Dashboard() {
                         <stop
                           offset="5%"
                           stopColor="#3B82F6"
-                          stopOpacity={0.1}
+                          stopOpacity={0.3}
                         />
                         <stop
                           offset="95%"
                           stopColor="#3B82F6"
-                          stopOpacity={0}
+                          stopOpacity={0.05}
+                        />
+                      </linearGradient>
+                      <linearGradient
+                        id="colorValorInvestido"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#06B6D4"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#06B6D4"
+                          stopOpacity={0.05}
                         />
                       </linearGradient>
                     </defs>
@@ -286,16 +346,45 @@ export default function Dashboard() {
                       }
                       labelStyle={{ color: "#374151", fontWeight: 600 }}
                     />
+                    <Legend
+                      verticalAlign="top"
+                      height={36}
+                      iconType="line"
+                      wrapperStyle={{ fontSize: "12px", paddingBottom: "10px" }}
+                      formatter={(value) => {
+                        if (value === "patrimoniobruto")
+                          return "Patrimônio Bruto";
+                        if (value === "valorInvestido")
+                          return "Valor Investido";
+                        return value;
+                      }}
+                    />
                     <Area
                       type="monotone"
-                      dataKey="valor"
+                      dataKey="patrimoniobruto"
                       stroke="#3B82F6"
                       strokeWidth={2.5}
-                      fill="url(#colorValor)"
+                      fill="url(#colorPatrimonioBruto)"
+                      opacity={1}
                       dot={false}
                       activeDot={{
                         r: 5,
                         fill: "#3B82F6",
+                        strokeWidth: 2,
+                        stroke: "#fff",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="valorInvestido"
+                      stroke="#06B6D4"
+                      strokeWidth={2.5}
+                      fill="url(#colorValorInvestido)"
+                      opacity={1}
+                      dot={false}
+                      activeDot={{
+                        r: 5,
+                        fill: "#06B6D4",
                         strokeWidth: 2,
                         stroke: "#fff",
                       }}
