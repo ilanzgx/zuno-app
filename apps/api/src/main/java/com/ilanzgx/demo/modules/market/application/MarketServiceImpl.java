@@ -77,13 +77,18 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Cacheable(value = "stockDividendsData", key = "#ticker")
-    public Map<String, Object> getStockDividendsData(String ticker) {
-        System.out.println("Buscando dados de dividendos através do microserviço para o ticker: " + ticker);
+    @Cacheable(value = "stockDividendsData", key = "#ticker + '_' + #fromDate")
+    public Map<String, Object> getStockDividendsData(String ticker, String fromDate) {
+        System.out.println("Buscando dados de dividendos através do microserviço para o ticker: " + ticker + " a partir de: " + fromDate);
 
         try {
+            String url = this.marketMicroserviceUrl + "/b3/dividends/" + ticker;
+            if (fromDate != null && !fromDate.isEmpty()) {
+                url += "?from_date=" + fromDate;
+            }
+
             ResponseEntity<Map> response = httpFetch.get(
-                    this.marketMicroserviceUrl + "/b3/dividends/" + ticker,
+                    url,
                     Map.of("Accept", "application/json"),
                     Map.class);
 

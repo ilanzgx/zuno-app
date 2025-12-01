@@ -7,5 +7,5 @@ public interface MarketService {
 
     Map<String, Object> getFullStockData(String ticker);
 
-    Map<String, Object> getStockDividendsData(String ticker);
+    Map<String, Object> getStockDividendsData(String ticker, String fromDate);
 }

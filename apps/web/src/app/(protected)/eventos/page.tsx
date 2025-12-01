@@ -69,6 +69,11 @@ export default function EventosPage() {
     const allEvents: DividendEvent[] = [];
 
     data.dividends.forEach((position) => {
+      if (!position.dividendsData || !position.dividendsData.dividends) {
+        console.warn(`No dividend data for ${position.ticker}`);
+        return;
+      }
+
       const dividends = position.dividendsData.dividends;
 
       Object.entries(dividends).forEach(([date, value]) => {

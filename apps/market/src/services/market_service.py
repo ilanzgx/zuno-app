@@ -24,11 +24,24 @@ class MarketService:
             "recommendationKey": info.get("recommendationKey")
         }
 
-    def get_b3_dividends_data(self, ticker: str) -> dict:
+    def get_b3_dividends_data(self, ticker: str, from_date: str = None) -> dict:
         symbol = self._format_ticker(ticker)
         ticker_obj = yf.Ticker(symbol)
 
         dividends = ticker_obj.dividends.to_dict()
+
+        if from_date:
+            try:
+                from datetime import datetime
+                filter_date = datetime.strptime(from_date, "%d/%m/%Y")
+
+                dividends = {
+                    k: v for k, v in dividends.items()
+                    if pd.Timestamp(k).to_pydatetime().replace(tzinfo=None) >= filter_date
+                }
+
+            except ValueError as e:
+                print(f"Error {from_date}: {e}")
 
         dividends_formatted = {str(k): v for k, v in dividends.items()}
 

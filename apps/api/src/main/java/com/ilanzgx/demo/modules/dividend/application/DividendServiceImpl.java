@@ -1,5 +1,6 @@
 package com.ilanzgx.demo.modules.dividend.application;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +13,9 @@ import com.ilanzgx.demo.modules.dividend.domain.DividendService;
 import com.ilanzgx.demo.modules.market.domain.MarketService;
 import com.ilanzgx.demo.modules.position.domain.Position;
 import com.ilanzgx.demo.modules.position.domain.PositionRepository;
+import com.ilanzgx.demo.modules.transaction.domain.Transaction;
+import com.ilanzgx.demo.modules.transaction.domain.TransactionRepository;
+import com.ilanzgx.demo.modules.transaction.domain.TransactionType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 public class DividendServiceImpl implements DividendService {
     private final PositionRepository positionRepository;
     private final MarketService marketService;
+    private final TransactionRepository transactionRepository;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public UserDividendsResponse getAllUserDividends(String userId) {
@@ -28,7 +35,22 @@ public class DividendServiceImpl implements DividendService {
         List<PositionDividendData> dividendsData = positions.stream()
             .filter(position -> position.getQuantity() > 0)
             .map(position -> {
-                Map<String, Object> dividendsInfo = marketService.getStockDividendsData(position.getTicker());
+                // Pega a primeira transação de compra do ativo
+                Transaction firstTransaction = transactionRepository
+                    .findFirstByUserIdAndTickerAndTypeOrderByDateAsc(
+                        userId,
+                        position.getTicker(),
+                        TransactionType.BUY
+                    );
+
+                String fromDate = firstTransaction != null
+                    ? firstTransaction.getDate().format(DATE_FORMATTER)
+                    : null;
+
+                Map<String, Object> dividendsInfo = marketService.getStockDividendsData(
+                    position.getTicker(),
+                    fromDate
+                );
 
                 return PositionDividendData.builder()
                     .ticker(position.getTicker())
