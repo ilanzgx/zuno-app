@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { validateToken } from "@/resources/user/user.service";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   const { pathname } = request.nextUrl;
@@ -10,11 +11,26 @@ export function middleware(request: NextRequest) {
   const isProtectedRoute = pathname.startsWith("/dashboard");
 
   if (token && isAuthRoute) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const isValid = await validateToken();
+    if (isValid) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    const response = NextResponse.next();
+    response.cookies.delete("token");
+    return response;
   }
 
-  if (!token && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/entrar", request.url));
+  if (isProtectedRoute) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/entrar", request.url));
+    }
+
+    const isValid = await validateToken();
+    if (!isValid) {
+      const response = NextResponse.redirect(new URL("/entrar", request.url));
+      response.cookies.delete("token");
+      return response;
+    }
   }
 
   return NextResponse.next();
