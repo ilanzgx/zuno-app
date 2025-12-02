@@ -157,6 +157,7 @@ A API fornece os seguintes endpoints:
 - **Transações:** `/v1/transactions`
 - **Portfólio:** `/v1/portfolio`
 - **Dividendos:** `/v1/dividends`
+- **Mercado de Ações:** `/v1/market`
 
 ### Market API (FastAPI)
 
@@ -164,6 +165,7 @@ A Market API fornece dados em tempo real do mercado financeiro:
 
 - **Cotações B3:** `GET /b3/quote/{ticker}` - Obtém cotação de ações da B3
 - **Dividendos B3:** `GET /b3/dividends/{ticker}` - Obtém histórico de dividendos
+- **Notícias:** `GET /b3/news/{ticker}` - Obtém notícias de um ativo
 - **Cotações Crypto:** `GET /crypto/quote/{ticker}` - Obtém cotação de criptomoedas
 
 ## 🤝 Contribuição
