@@ -12,6 +12,7 @@ import {
   Calendar,
   Plus,
   FileText,
+  BanknoteArrowUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -50,14 +51,19 @@ const navigationItems = [
     icon: PieChart,
   },
   {
-    title: "Eventos",
-    url: "/eventos",
-    icon: Calendar,
+    title: "Dividendos",
+    url: "/dividendos",
+    icon: BanknoteArrowUp,
   },
   {
     title: "Transações",
     url: "/transacoes",
     icon: ArrowLeftRight,
+  },
+  {
+    title: "Notícias",
+    url: "/noticias",
+    icon: Calendar,
   },
 ];
 

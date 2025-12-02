@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,7 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createTransaction } from "@/resources/transaction/transaction.service";
 import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUserStore } from "@/stores/user.store";
 import { Transaction } from "@/resources/transaction/transaction.entity";
 
@@ -68,6 +68,7 @@ export function CreateTransactionDialog({
   open,
   onOpenChange,
 }: CreateTransactionDialogProps) {
+  const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const user = useUserStore((state) => state.user);
@@ -83,6 +84,33 @@ export function CreateTransactionDialog({
       quantity: 0,
     },
   });
+
+  // Watch price and quantity for total calculation
+  const price = form.watch("price");
+  const quantity = form.watch("quantity");
+
+  const totalValue = useMemo(() => {
+    const numPrice = Number(price) || 0;
+    const numQuantity = Number(quantity) || 0;
+    return numPrice * numQuantity;
+  }, [price, quantity]);
+
+  const handleNextStep = async () => {
+    // Validate step 1 fields
+    const step1Valid = await form.trigger([
+      "assetType",
+      "type",
+      "date",
+      "ticker",
+    ]);
+    if (step1Valid) {
+      setStep(2);
+    }
+  };
+
+  const handlePreviousStep = () => {
+    setStep(1);
+  };
 
   const onSubmit = async (data: TransactionFormData) => {
     if (!user?.id) {
@@ -108,6 +136,7 @@ export function CreateTransactionDialog({
 
         setTimeout(() => {
           setShowSuccess(false);
+          setStep(1);
           form.reset();
           onOpenChange(false);
         }, 1500);
@@ -122,8 +151,16 @@ export function CreateTransactionDialog({
     }
   };
 
+  const handleDialogChange = (newOpen: boolean) => {
+    onOpenChange(newOpen);
+    if (!newOpen) {
+      setStep(1);
+      form.reset();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogContent className="sm:max-w-[500px]">
         <AnimatePresence mode="wait">
           {showSuccess ? (
@@ -153,204 +190,236 @@ export function CreateTransactionDialog({
               </motion.h3>
             </motion.div>
           ) : (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div>
               <DialogHeader>
                 <DialogTitle>Cadastrar Transação</DialogTitle>
                 <DialogDescription>
-                  Preencha os dados da transação que deseja cadastrar.
+                  Passo {step} de 2 -{" "}
+                  {step === 1 ? "Informações básicas" : "Valores"}
                 </DialogDescription>
               </DialogHeader>
 
+              {/* Progress indicator */}
+              <div className="flex gap-2 mt-4">
+                <div
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    step >= 1 ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+                <div
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    step >= 2 ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+              </div>
+
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4 mt-4"
-                >
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <FormField
-                      control={form.control}
-                      name="assetType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tipo do Ativo</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6">
+                  <AnimatePresence mode="wait">
+                    {step === 1 && (
+                      <motion.div
+                        key="step1"
+                        initial={{ x: 300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -300, opacity: 0 }}
+                        transition={{
+                          type: "spring",
+                          damping: 20,
+                          stiffness: 200,
+                        }}
+                        className="space-y-4"
+                      >
+                        <FormField
+                          control={form.control}
+                          name="assetType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Tipo do Ativo</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o tipo" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="STOCK">Ação</SelectItem>
+                                  <SelectItem value="FII">
+                                    Fundo Imobiliário
+                                  </SelectItem>
+                                  <SelectItem value="BDR">BDR</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Tipo de Transação</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o tipo" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="BUY">Compra</SelectItem>
+                                  <SelectItem value="SELL">Venda</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="date"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Data da Transação</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="ticker"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Ticker do Ativo</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Ex: PETR4"
+                                  {...field}
+                                  className="uppercase"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="flex justify-end gap-3 pt-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => handleDialogChange(false)}
                           >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione o tipo" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="STOCK">Ação</SelectItem>
-                              <SelectItem value="FII">
-                                Fundo Imobiliário
-                              </SelectItem>
-                              <SelectItem value="BDR">BDR</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
+                            Cancelar
+                          </Button>
+                          <Button type="button" onClick={handleNextStep}>
+                            Próximo
+                            <ChevronRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
 
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 }}
-                  >
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tipo da Transação</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                    {step === 2 && (
+                      <motion.div
+                        key="step2"
+                        initial={{ x: 300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -300, opacity: 0 }}
+                        transition={{
+                          type: "spring",
+                          damping: 20,
+                          stiffness: 200,
+                        }}
+                        className="space-y-4"
+                      >
+                        <FormField
+                          control={form.control}
+                          name="quantity"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Quantidade</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  placeholder="0"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="price"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Preço (R$)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Total Value Display */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="p-4 bg-muted rounded-lg"
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium text-muted-foreground">
+                              Valor Total:
+                            </span>
+                            <span className="text-xl font-bold">
+                              {new Intl.NumberFormat("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                              }).format(totalValue)}
+                            </span>
+                          </div>
+                        </motion.div>
+
+                        <div className="flex justify-between gap-3 pt-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handlePreviousStep}
+                            disabled={isSubmitting}
                           >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione o tipo" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="BUY">Compra</SelectItem>
-                              <SelectItem value="SELL">Venda</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <FormField
-                        control={form.control}
-                        name="ticker"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Ticker</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Ex: PETR4"
-                                {...field}
-                                className="uppercase"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.25 }}
-                    >
-                      <FormField
-                        control={form.control}
-                        name="date"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Data</FormLabel>
-                            <FormControl>
-                              <Input type="date" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Preço (R$)</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                placeholder="0.00"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.35 }}
-                    >
-                      <FormField
-                        control={form.control}
-                        name="quantity"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Quantidade</FormLabel>
-                            <FormControl>
-                              <Input type="number" placeholder="0" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                  </div>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="flex justify-end gap-3 pt-4"
-                  >
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => onOpenChange(false)}
-                      disabled={isSubmitting}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? "Cadastrando..." : "Cadastrar"}
-                    </Button>
-                  </motion.div>
+                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            Voltar
+                          </Button>
+                          <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? "Cadastrando..." : "Cadastrar"}
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </form>
               </Form>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </DialogContent>
