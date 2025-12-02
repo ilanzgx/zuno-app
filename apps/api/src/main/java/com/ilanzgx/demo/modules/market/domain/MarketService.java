@@ -10,5 +10,8 @@ public interface MarketService {
     Map<String, Object> getStockDividendsData(String ticker, String fromDate);
 
     Map<String, Object> getPriceOnDate(String ticker, String date);
+
     Map<String, Object> getCurrentPrice(String ticker);
+
+    Map<String, Object> getStockNews(String ticker);
 }

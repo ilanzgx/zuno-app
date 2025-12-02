@@ -139,4 +139,22 @@ public class MarketServiceImpl implements MarketService {
             return Map.of("error", "Preço não encontrado");
         }
     }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "stockNews", key = "#ticker")
+    public Map<String, Object> getStockNews(String ticker) {
+        try {
+            String url = this.marketMicroserviceUrl + "/b3/news/" + ticker;
+
+            ResponseEntity<Map> response = httpFetch.get(
+                    url,
+                    Map.of("Accept", "application/json"),
+                    Map.class);
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar preço atual: " + e.getMessage());
+            return Map.of("error", "Preço não encontrado");
+        }
+    }
 }

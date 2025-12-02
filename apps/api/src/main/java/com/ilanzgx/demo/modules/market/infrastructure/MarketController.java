@@ -32,4 +32,10 @@ public class MarketController {
     public ResponseEntity<Map<String, Object>> getCurrentQuote(@PathVariable String ticker) {
         return ResponseEntity.ok(marketService.getCurrentPrice(ticker));
     }
+
+    @GetMapping("/news/{ticker}")
+    public ResponseEntity<Map<String, Object>> getNews(@PathVariable String ticker) {
+        return ResponseEntity.ok(marketService.getStockNews(ticker));
+    }
+
 }

@@ -146,5 +146,3 @@ class MarketService:
             "ticker": ticker,
             "news": news
         }
-
-
