@@ -90,7 +90,6 @@ export function CreateTransactionDialog({
     },
   });
 
-  // Watch price and quantity for total calculation
   const price = form.watch("price");
   const quantity = form.watch("quantity");
 
@@ -101,7 +100,6 @@ export function CreateTransactionDialog({
   }, [price, quantity]);
 
   const handleNextStep = async () => {
-    // Validate step 1 fields
     const step1Valid = await form.trigger([
       "assetType",
       "type",
@@ -109,39 +107,48 @@ export function CreateTransactionDialog({
       "ticker",
     ]);
 
-    if (step1Valid) {
-      setStep(2);
+    if (!step1Valid) {
+      return;
+    }
 
-      const ticker = form.getValues("ticker");
-      const date = form.getValues("date");
+    const ticker = form.getValues("ticker");
+    const date = form.getValues("date");
 
-      if (ticker && date) {
-        setIsFetchingPrice(true);
-        try {
-          const [year, month, day] = date.split("-");
-          const formattedDate = `${day}/${month}/${year}`;
+    if (!ticker || !date) {
+      return;
+    }
 
-          const stockData = await getStockDataByDate(ticker, formattedDate);
+    setIsFetchingPrice(true);
+    try {
+      const [year, month, day] = date.split("-");
+      const formattedDate = `${day}/${month}/${year}`;
 
-          if (stockData && stockData.close) {
-            const roundedPrice = Math.round(stockData.close * 100) / 100;
-            form.setValue("price", roundedPrice);
-            setPriceResult(roundedPrice);
-            setPriceDate(formattedDate);
-          } else {
-            toast.info(
-              `Não foi possível buscar o preço de ${ticker} para ${formattedDate}`
-            );
-            setPriceDate(null);
-          }
-        } catch (error) {
-          console.error("Error fetching price:", error);
-          toast.error("Erro ao buscar preço do ativo");
-          setPriceDate(null);
-        } finally {
-          setIsFetchingPrice(false);
-        }
+      const stockData = await getStockDataByDate(ticker, formattedDate);
+
+      if (stockData && stockData.close) {
+        const roundedPrice = Math.round(stockData.close * 100) / 100;
+        form.setValue("price", roundedPrice);
+        setPriceResult(roundedPrice);
+        setPriceDate(formattedDate);
+
+        // Só avança para o passo 2 se encontrou dados válidos
+        setStep(2);
+      } else {
+        toast.error(
+          `Ativo ${ticker} não encontrado ou sem dados para ${formattedDate}. Verifique o ticker e a data.`
+        );
+        setPriceDate(null);
+        setPriceResult(null);
       }
+    } catch (error) {
+      console.error("Error fetching price:", error);
+      toast.error(
+        "Erro ao buscar dados do ativo. Verifique o ticker e tente novamente."
+      );
+      setPriceDate(null);
+      setPriceResult(null);
+    } finally {
+      setIsFetchingPrice(false);
     }
   };
 
