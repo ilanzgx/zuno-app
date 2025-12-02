@@ -86,3 +86,14 @@ class MarketService:
             "regularMarketPrice": info.get("regularMarketPrice")
         }
 
+    def get_b3_news_data(self, ticker: str) -> dict:
+        symbol = self._format_ticker(ticker)
+        ticker_obj = yf.Ticker(symbol)
+        news = ticker_obj.news
+
+        return {
+            "ticker": ticker,
+            "news": news
+        }
+
+
