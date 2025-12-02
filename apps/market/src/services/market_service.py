@@ -18,7 +18,7 @@ class MarketService:
                 start_date = target_date - timedelta(days=5)
                 end_date = target_date + timedelta(days=1)
 
-                hist_data = ticker_obj.history(start=start_date, end=end_date)
+                hist_data = ticker_obj.history(start=start_date, end=end_date, auto_adjust=False)
 
                 if hist_data.empty:
                     print(f"No historical data found for {ticker} on {date}")
