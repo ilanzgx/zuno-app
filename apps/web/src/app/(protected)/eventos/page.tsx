@@ -75,18 +75,44 @@ export default function EventosPage() {
       }
 
       const dividends = position.dividendsData.dividends;
+      const transactions = position.transactions || [];
+
+      const getQuantityAtDate = (targetDate: Date): number => {
+        let quantity = 0;
+
+        for (const transaction of transactions) {
+          const transactionDate = new Date(transaction.date);
+
+          if (transactionDate <= targetDate) {
+            if (transaction.type === "BUY") {
+              quantity += transaction.quantity;
+            } else if (transaction.type === "SELL") {
+              quantity -= transaction.quantity;
+            }
+          } else {
+            break;
+          }
+        }
+
+        return quantity;
+      };
 
       Object.entries(dividends).forEach(([date, value]) => {
-        const eventType: "JSCP" | "Dividendo" = "Dividendo";
+        const dividendDate = new Date(date);
+        const quantityAtDate = getQuantityAtDate(dividendDate);
 
-        allEvents.push({
-          paymentDate: date,
-          eventType,
-          ticker: position.ticker,
-          unitValue: value,
-          quantity: position.quantity,
-          totalAmount: value * position.quantity,
-        });
+        if (quantityAtDate > 0) {
+          const eventType: "JSCP" | "Dividendo" = "Dividendo";
+
+          allEvents.push({
+            paymentDate: date,
+            eventType,
+            ticker: position.ticker,
+            unitValue: value,
+            quantity: quantityAtDate,
+            totalAmount: value * quantityAtDate,
+          });
+        }
       });
     });
 

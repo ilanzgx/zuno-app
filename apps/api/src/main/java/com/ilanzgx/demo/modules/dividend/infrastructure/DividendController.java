@@ -20,6 +20,7 @@ public class DividendController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserDividendsResponse> getAllUserDividends(@PathVariable String userId) {
         UserDividendsResponse response = dividendService.getAllUserDividends(userId);
+        System.out.println(response);
         return ResponseEntity.ok(response);
     }
 }

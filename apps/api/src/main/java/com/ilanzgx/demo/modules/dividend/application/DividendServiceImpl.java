@@ -35,6 +35,10 @@ public class DividendServiceImpl implements DividendService {
         List<PositionDividendData> dividendsData = positions.stream()
             .filter(position -> position.getQuantity() > 0)
             .map(position -> {
+                // Busca todas as transações do ticker ordenadas por data
+                List<Transaction> allTransactions = transactionRepository
+                    .findAllByUserIdAndTickerOrderByDateAsc(userId, position.getTicker());
+
                 // Pega a primeira transação de compra do ativo
                 Transaction firstTransaction = transactionRepository
                     .findFirstByUserIdAndTickerAndTypeOrderByDateAsc(
@@ -56,6 +60,7 @@ public class DividendServiceImpl implements DividendService {
                     .ticker(position.getTicker())
                     .quantity(position.getQuantity())
                     .dividendsData(dividendsInfo)
+                    .transactions(allTransactions)
                     .build();
             })
             .collect(Collectors.toList());
