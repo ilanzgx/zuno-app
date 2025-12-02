@@ -5,9 +5,60 @@ class MarketService:
     def _format_ticker(self, ticker: str) -> str:
         return ticker if ticker.endswith(".SA") else f"{ticker}.SA"
 
-    def get_b3_quote_data(self, ticker: str) -> dict:
+    def get_b3_quote_data(self, ticker: str, date: str = None) -> dict:
         symbol = self._format_ticker(ticker)
         ticker_obj = yf.Ticker(symbol)
+
+        # Se uma data específica for fornecida, obtenha dados históricos para aquela data
+        if date:
+            try:
+                from datetime import datetime, timedelta
+                target_date = datetime.strptime(date, "%d/%m/%Y")
+
+                start_date = target_date - timedelta(days=5)
+                end_date = target_date + timedelta(days=1)
+
+                hist_data = ticker_obj.history(start=start_date, end=end_date)
+
+                if hist_data.empty:
+                    print(f"No historical data found for {ticker} on {date}")
+                    return None
+
+                closest_date = None
+                for idx in hist_data.index:
+                    hist_date = idx.to_pydatetime().replace(tzinfo=None)
+                    if hist_date.date() == target_date.date():
+                        closest_date = idx
+                        break
+
+                if closest_date is None:
+                    for idx in reversed(hist_data.index):
+                        hist_date = idx.to_pydatetime().replace(tzinfo=None)
+                        if hist_date.date() <= target_date.date():
+                            closest_date = idx
+                            break
+
+                if closest_date is None:
+                    print(f"No data available for {ticker} on or before {date}")
+                    return None
+
+                row = hist_data.loc[closest_date]
+
+                return {
+                    "ticker": ticker,
+                    "date": str(closest_date.date()),
+                    "open": float(row['Open']),
+                    "high": float(row['High']),
+                    "low": float(row['Low']),
+                    "close": float(row['Close']),
+                    "volume": int(row['Volume'])
+                }
+            except ValueError as e:
+                print(f"Error parsing date {date}: {e}")
+                return None
+            except Exception as e:
+                print(f"Error fetching historical data: {e}")
+                return None
 
         info = ticker_obj.info
 
