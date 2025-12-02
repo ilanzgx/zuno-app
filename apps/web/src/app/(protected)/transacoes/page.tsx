@@ -136,7 +136,7 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 
           return (
             <TableRow key={transaction.id}>
-              <TableCell>{formatDate(transaction.date)}</TableCell>
+              <TableCell>{formatDate(transaction.createdAt)}</TableCell>
               <TableCell>
                 <div className="font-bold">{transaction.ticker}</div>
               </TableCell>

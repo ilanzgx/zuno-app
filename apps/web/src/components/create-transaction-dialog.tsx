@@ -19,6 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Select,
@@ -30,8 +31,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createTransaction } from "@/resources/transaction/transaction.service";
+import { getStockDataByDate } from "@/resources/market/market.service";
 import { toast } from "sonner";
-import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useUserStore } from "@/stores/user.store";
 import { Transaction } from "@/resources/transaction/transaction.entity";
 
@@ -71,6 +73,9 @@ export function CreateTransactionDialog({
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isFetchingPrice, setIsFetchingPrice] = useState(false);
+  const [priceDate, setPriceDate] = useState<string | null>(null);
+  const [priceResult, setPriceResult] = useState<number | null>(null);
   const user = useUserStore((state) => state.user);
 
   const form = useForm<TransactionFormData>({
@@ -103,8 +108,40 @@ export function CreateTransactionDialog({
       "date",
       "ticker",
     ]);
+
     if (step1Valid) {
       setStep(2);
+
+      const ticker = form.getValues("ticker");
+      const date = form.getValues("date");
+
+      if (ticker && date) {
+        setIsFetchingPrice(true);
+        try {
+          const [year, month, day] = date.split("-");
+          const formattedDate = `${day}/${month}/${year}`;
+
+          const stockData = await getStockDataByDate(ticker, formattedDate);
+
+          if (stockData && stockData.close) {
+            const roundedPrice = Math.round(stockData.close * 100) / 100;
+            form.setValue("price", roundedPrice);
+            setPriceResult(roundedPrice);
+            setPriceDate(formattedDate);
+          } else {
+            toast.info(
+              `Não foi possível buscar o preço de ${ticker} para ${formattedDate}`
+            );
+            setPriceDate(null);
+          }
+        } catch (error) {
+          console.error("Error fetching price:", error);
+          toast.error("Erro ao buscar preço do ativo");
+          setPriceDate(null);
+        } finally {
+          setIsFetchingPrice(false);
+        }
+      }
     }
   };
 
@@ -373,8 +410,21 @@ export function CreateTransactionDialog({
                                   step="0.01"
                                   placeholder="0.00"
                                   {...field}
+                                  disabled={isFetchingPrice}
                                 />
                               </FormControl>
+                              {isFetchingPrice && (
+                                <FormDescription className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                  Buscando preço...
+                                </FormDescription>
+                              )}
+                              {!isFetchingPrice && priceDate && priceResult && (
+                                <FormDescription className="text-muted-foreground text-xs">
+                                  Preço de R$ {priceResult.toFixed(2)} em{" "}
+                                  {priceDate}
+                                </FormDescription>
+                              )}
                               <FormMessage />
                             </FormItem>
                           )}

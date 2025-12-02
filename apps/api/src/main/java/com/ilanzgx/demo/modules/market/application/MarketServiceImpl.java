@@ -75,11 +75,13 @@ public class MarketServiceImpl implements MarketService {
         }
     }
 
+    /* Métodos do meu microserviço */
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Cacheable(value = "stockDividendsData", key = "#ticker + '_' + #fromDate")
     public Map<String, Object> getStockDividendsData(String ticker, String fromDate) {
-        System.out.println("Buscando dados de dividendos através do microserviço para o ticker: " + ticker + " a partir de: " + fromDate);
+        System.out.println("Buscando dados de dividendos através do microserviço para o ticker: " + ticker
+                + " a partir de: " + fromDate);
 
         try {
             String url = this.marketMicroserviceUrl + "/b3/dividends/" + ticker;
@@ -102,4 +104,39 @@ public class MarketServiceImpl implements MarketService {
         }
     }
 
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "priceOnDate", key = "#ticker + #date")
+    public Map<String, Object> getPriceOnDate(String ticker, String date) {
+        try {
+            String url = this.marketMicroserviceUrl + "/b3/quote/" + ticker + "?date=" + date;
+
+            ResponseEntity<Map> response = httpFetch.get(
+                    url,
+                    Map.of("Accept", "application/json"),
+                    Map.class);
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar preço histórico: " + e.getMessage());
+            return Map.of("error", "Preço não encontrado para a data");
+        }
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "currentPrice", key = "#ticker")
+    public Map<String, Object> getCurrentPrice(String ticker) {
+        try {
+            String url = this.marketMicroserviceUrl + "/b3/quote/" + ticker;
+
+            ResponseEntity<Map> response = httpFetch.get(
+                    url,
+                    Map.of("Accept", "application/json"),
+                    Map.class);
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar preço atual: " + e.getMessage());
+            return Map.of("error", "Preço não encontrado");
+        }
+    }
 }

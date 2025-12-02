@@ -51,8 +51,8 @@ const navigationItems = [
     icon: PieChart,
   },
   {
-    title: "Dividendos",
-    url: "/dividendos",
+    title: "Eventos",
+    url: "/eventos",
     icon: BanknoteArrowUp,
   },
   {
