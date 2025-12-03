@@ -146,3 +146,22 @@ class MarketService:
             "ticker": ticker,
             "news": news
         }
+
+    def get_b3_news_for_tickers(self, tickers: list[str]) -> dict:
+        all_news = []
+        for ticker in tickers:
+            try:
+                data = self.get_b3_news_data(ticker)
+                if data and 'news' in data:
+                    for news_item in data['news']:
+                        news_item['relatedTicker'] = ticker
+                        all_news.append(news_item)
+            except Exception as e:
+                print(f"Error fetching news for {ticker}: {e}")
+                continue
+
+        all_news.sort(key=lambda x: x.get('providerPublishTime', 0), reverse=True)
+
+        return {
+            "news": all_news
+        }
