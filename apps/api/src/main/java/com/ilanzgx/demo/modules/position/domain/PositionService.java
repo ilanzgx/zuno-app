@@ -1,6 +1,7 @@
 package com.ilanzgx.demo.modules.position.domain;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionRequest;
 import com.ilanzgx.demo.modules.position.application.dto.position.PositionResponse;
@@ -18,4 +19,5 @@ public interface PositionService {
 
     void processTransaction(Transaction tx);
 
+    Map<String, Object> getStockNewsByUserPosition(String userId);
 }

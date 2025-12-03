@@ -9,6 +9,9 @@ import com.ilanzgx.demo.modules.position.application.dto.position.PositionRespon
 import com.ilanzgx.demo.modules.position.application.dto.position.UserPositionResponse;
 import com.ilanzgx.demo.modules.market.domain.MarketService;
 import com.ilanzgx.demo.modules.user.application.UserMapper;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,21 +21,26 @@ import com.ilanzgx.demo.modules.position.application.dto.position.PositionRespon
 import com.ilanzgx.demo.modules.position.domain.Position;
 import com.ilanzgx.demo.modules.position.domain.PositionRepository;
 import com.ilanzgx.demo.modules.position.domain.PositionService;
+import com.ilanzgx.demo.modules.shared.domain.HttpFetch;
 import com.ilanzgx.demo.modules.transaction.domain.Transaction;
 import com.ilanzgx.demo.modules.transaction.domain.TransactionType;
 import com.ilanzgx.demo.modules.user.domain.User;
 import com.ilanzgx.demo.modules.user.domain.UserRepository;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PositionServiceImpl implements PositionService {
     private final PositionRepository positionRepository;
     private final UserRepository userRepository;
     private final PositionMapper positionMapper;
     private final UserMapper userMapper;
     private final MarketService marketService;
+    private final HttpFetch httpFetch;
+
+    @Value("${market.microservice.url}")
+    private String marketMicroserviceUrl;
 
     @Override
     public Position createPosition(PositionRequest positionRequest) {
@@ -167,6 +175,37 @@ public class PositionServiceImpl implements PositionService {
 
         if (newAmount == 0) {
             position.setAveragePrice(BigDecimal.ZERO);
+        }
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "userStockNews", key = "#userId", unless = "#result == null")
+    public Map<String, Object> getStockNewsByUserPosition(String userId) {
+        try {
+            UserPositionResponse userPositionsResponse = this.getPositionsByUser(userId);
+
+            String tickers = userPositionsResponse.positions().stream()
+                .map(position -> position.ticker())
+                .reduce((t1, t2) -> t1 + "," + t2)
+                .orElse("");
+
+            if (tickers.isEmpty()) {
+                return Map.of("message", "Usuário não possui posições", "news", List.of());
+            }
+
+            String url = this.marketMicroserviceUrl + "/b3/news?tickers=" + tickers;
+
+            ResponseEntity<Map> response = httpFetch.get(
+                    url,
+                    Map.of("Accept", "application/json"),
+                    Map.class);
+
+            return response.getBody();
+        } catch(Exception e) {
+            System.err.println("Erro ao buscar notícias: " + e.getMessage());
+            e.printStackTrace();
+            return Map.of("error", "Erro ao buscar notícias: " + e.getMessage());
         }
     }
 }

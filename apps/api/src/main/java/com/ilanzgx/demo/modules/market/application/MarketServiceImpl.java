@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.ilanzgx.demo.modules.shared.domain.HttpFetch;
 import com.ilanzgx.demo.modules.market.domain.MarketService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -153,8 +152,8 @@ public class MarketServiceImpl implements MarketService {
                     Map.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar preço atual: " + e.getMessage());
-            return Map.of("error", "Preço não encontrado");
+            System.err.println("Erro ao buscar notícias: " + e.getMessage());
+            return Map.of("error", "Notícias não encontradas");
         }
     }
 }

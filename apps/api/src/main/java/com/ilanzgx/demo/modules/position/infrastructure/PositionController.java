@@ -41,6 +41,11 @@ public class PositionController {
         return this.positionService.getPositionsByUser(userId);
     }
 
+    @GetMapping("/news/user/{userId}")
+    public Map<String, Object> getStockNewsByUserPosition(@PathVariable String userId) {
+        return this.positionService.getStockNewsByUserPosition(userId);
+    }
+
     /*
     @PostMapping
     public PositionResponse createPosition(@RequestBody PositionRequest positionRequest) {

@@ -37,5 +37,4 @@ public class MarketController {
     public ResponseEntity<Map<String, Object>> getNews(@PathVariable String ticker) {
         return ResponseEntity.ok(marketService.getStockNews(ticker));
     }
-
 }
