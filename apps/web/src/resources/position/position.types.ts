@@ -36,3 +36,63 @@ export interface UserPositionResponse {
   };
   positions: Position[];
 }
+
+export interface UserPositionNews {
+  news: Array<{
+    id: string;
+    relatedTicker: string;
+    providerPublishTime?: number;
+    link?: string;
+    title?: string;
+    content: {
+      id: string;
+      contentType: string;
+      title: string;
+      description?: string;
+      summary?: string;
+      pubDate: string;
+      displayTime: string;
+      isHosted: boolean;
+      bypassModal: boolean;
+      previewUrl?: string | null;
+      thumbnail?: {
+        originalUrl: string;
+        originalWidth: number;
+        originalHeight: number;
+        caption?: string;
+        resolutions: Array<{
+          url: string;
+          width: number;
+          height: number;
+          tag: string;
+        }>;
+      };
+      provider: {
+        displayName: string;
+        url: string;
+      };
+      canonicalUrl?: {
+        url: string;
+        site: string;
+        region: string;
+        lang: string;
+      };
+      clickThroughUrl?: {
+        url: string;
+        site: string;
+        region: string;
+        lang: string;
+      };
+      metadata?: {
+        editorsPick: boolean;
+      };
+      finance?: {
+        premiumFinance: {
+          isPremiumNews: boolean;
+          isPremiumFreeNews: boolean;
+        };
+      };
+      storyline?: any;
+    };
+  }>;
+}
