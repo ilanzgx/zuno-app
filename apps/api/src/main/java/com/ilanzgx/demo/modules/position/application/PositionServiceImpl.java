@@ -108,6 +108,7 @@ public class PositionServiceImpl implements PositionService {
         List<Position> positions = positionRepository.findByPropertyOwner_Id(userId);
 
         List<PositionResponseWithData> positionDataEnriched = positions.stream()
+                .filter(position -> position.getQuantity() != null && position.getQuantity() > 0)
                 .map(position -> {
                     Map<String, Object> res = marketService.getSimpleStockData(position.getTicker());
                     Map<String, Object> positionData = ResponseEntity.ok(res).getBody();

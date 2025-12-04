@@ -40,8 +40,12 @@ public class TransactionServiceImpl implements TransactionService {
             .user(user)
             .build();
 
-        this.transactionRepository.save(transaction);
-        this.positionService.processTransaction(transaction);
+        try {
+            this.positionService.processTransaction(transaction);
+            this.transactionRepository.save(transaction);
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating transaction");
+        }
 
         return transaction;
     }
