@@ -5,7 +5,6 @@ import {
   PieChart,
   ArrowLeftRight,
   Wallet,
-  TrendingUp,
   Settings,
   LogOut,
   User as UserIcon,
@@ -14,6 +13,7 @@ import {
   FileText,
   BanknoteArrowUp,
 } from "lucide-react";
+import Image from "next/image";
 import {
   Sidebar,
   SidebarContent,
@@ -88,14 +88,14 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <TrendingUp className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">InvestHub</span>
-                  <span className="truncate text-xs">Consolidador</span>
-                </div>
+              <a href="/dashboard" className="flex justify-start items-center">
+                <Image
+                  src="/zuno-logo.svg"
+                  alt="Zuno"
+                  width={80}
+                  height={80}
+                  className="size-24"
+                />
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
