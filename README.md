@@ -403,7 +403,10 @@ Não se esqueça de dar uma estrela ao projeto! Obrigado!
 
 ## Licença
 
-Distribuído sob a Licença ISC. Veja `LICENSE` para mais informações.
+Este projeto é licenciado sob a **GNU Affero General Public License v3.0 (AGPLv3)**.
+Isso significa que qualquer pessoa que modificar ou utilizar este software para oferecer um serviço (SaaS) deve disponibilizar o código-fonte dessas modificações.
+
+Para mais detalhes, consulte o arquivo [`LICENSE`](./LICENSE).
 
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
