@@ -1,6 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-
 import { getProfile } from "@/resources/user/user.service";
 import { redirect } from "next/navigation";
 import StoreInitializer from "@/components/store-initializer";
