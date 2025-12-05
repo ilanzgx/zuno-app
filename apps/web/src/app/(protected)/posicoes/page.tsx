@@ -67,9 +67,7 @@ interface TransactionsTableProps {
 }
 
 function TransactionsTable({ positions }: TransactionsTableProps) {
-  const displayPositions = positions.slice(0, 10);
-
-  if (displayPositions.length === 0) {
+  if (positions.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground">
         Nenhuma posição encontrada.
@@ -92,7 +90,7 @@ function TransactionsTable({ positions }: TransactionsTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {displayPositions.map((position) => {
+        {positions.map((position) => {
           const positionData = position.positionData?.results?.[0];
           const currentPrice = positionData?.regularMarketPrice || 0;
           const totalInvested = position.averagePrice * position.quantity;
