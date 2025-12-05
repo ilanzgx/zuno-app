@@ -21,15 +21,11 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { createTransaction } from "@/resources/transaction/transaction.service";
 import { getStockDataByDate } from "@/resources/market/market.service";
 import { toast } from "sonner";
@@ -277,25 +273,61 @@ export function CreateTransactionDialog({
                           control={form.control}
                           name="assetType"
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="space-y-3">
                               <FormLabel>Tipo do Ativo</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Selecione o tipo" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="STOCK">Ação</SelectItem>
-                                  <SelectItem value="FII">
-                                    Fundo Imobiliário
-                                  </SelectItem>
-                                  <SelectItem value="BDR">BDR</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                  className="grid grid-cols-3 gap-3"
+                                >
+                                  <div>
+                                    <RadioGroupItem
+                                      value="STOCK"
+                                      id="stock"
+                                      className="peer sr-only"
+                                    />
+                                    <Label
+                                      htmlFor="stock"
+                                      className="flex flex-col items-center justify-center rounded-md border border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                                    >
+                                      <span className="text-sm font-semibold">
+                                        Ação
+                                      </span>
+                                    </Label>
+                                  </div>
+                                  <div>
+                                    <RadioGroupItem
+                                      value="FII"
+                                      id="fii"
+                                      className="peer sr-only"
+                                    />
+                                    <Label
+                                      htmlFor="fii"
+                                      className="flex flex-col items-center justify-center rounded-md border border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                                    >
+                                      <span className="text-sm font-semibold">
+                                        FII
+                                      </span>
+                                    </Label>
+                                  </div>
+                                  <div>
+                                    <RadioGroupItem
+                                      value="BDR"
+                                      id="bdr"
+                                      className="peer sr-only"
+                                    />
+                                    <Label
+                                      htmlFor="bdr"
+                                      className="flex flex-col items-center justify-center rounded-md border border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                                    >
+                                      <span className="text-sm font-semibold">
+                                        BDR
+                                      </span>
+                                    </Label>
+                                  </div>
+                                </RadioGroup>
+                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -305,22 +337,46 @@ export function CreateTransactionDialog({
                           control={form.control}
                           name="type"
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="space-y-3">
                               <FormLabel>Tipo de Transação</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Selecione o tipo" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="BUY">Compra</SelectItem>
-                                  <SelectItem value="SELL">Venda</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                  className="grid grid-cols-2 gap-3"
+                                >
+                                  <div>
+                                    <RadioGroupItem
+                                      value="BUY"
+                                      id="buy"
+                                      className="peer sr-only"
+                                    />
+                                    <Label
+                                      htmlFor="buy"
+                                      className="flex flex-col items-center justify-center rounded-md border border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                                    >
+                                      <span className="text-sm font-semibold">
+                                        Compra
+                                      </span>
+                                    </Label>
+                                  </div>
+                                  <div>
+                                    <RadioGroupItem
+                                      value="SELL"
+                                      id="sell"
+                                      className="peer sr-only"
+                                    />
+                                    <Label
+                                      htmlFor="sell"
+                                      className="flex flex-col items-center justify-center rounded-md border border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                                    >
+                                      <span className="text-sm font-semibold">
+                                        Venda
+                                      </span>
+                                    </Label>
+                                  </div>
+                                </RadioGroup>
+                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -366,7 +422,11 @@ export function CreateTransactionDialog({
                           >
                             Cancelar
                           </Button>
-                          <Button type="button" onClick={handleNextStep}>
+                          <Button
+                            className="bg-gradient-to-br from-[#549d8c] to-[#2e6669] cursor-pointer"
+                            type="button"
+                            onClick={handleNextStep}
+                          >
                             Próximo
                             <ChevronRight className="ml-2 h-4 w-4" />
                           </Button>
@@ -467,7 +527,11 @@ export function CreateTransactionDialog({
                             <ChevronLeft className="mr-2 h-4 w-4" />
                             Voltar
                           </Button>
-                          <Button type="submit" disabled={isSubmitting}>
+                          <Button
+                            className="bg-gradient-to-br from-[#549d8c] to-[#2e6669] cursor-pointer"
+                            type="submit"
+                            disabled={isSubmitting}
+                          >
                             {isSubmitting ? "Cadastrando..." : "Cadastrar"}
                           </Button>
                         </div>
