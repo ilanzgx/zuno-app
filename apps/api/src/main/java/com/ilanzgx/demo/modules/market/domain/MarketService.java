@@ -1,5 +1,6 @@
 package com.ilanzgx.demo.modules.market.domain;
 
+import java.util.List;
 import java.util.Map;
 
 public interface MarketService {
@@ -14,4 +15,6 @@ public interface MarketService {
     Map<String, Object> getCurrentPrice(String ticker);
 
     Map<String, Object> getStockNews(String ticker);
+
+    List<Map<String, Object>> getStockHistory(String ticker);
 }

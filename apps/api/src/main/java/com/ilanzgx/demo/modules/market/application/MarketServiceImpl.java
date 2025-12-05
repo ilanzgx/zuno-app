@@ -1,5 +1,6 @@
 package com.ilanzgx.demo.modules.market.application;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -154,6 +155,23 @@ public class MarketServiceImpl implements MarketService {
         } catch (Exception e) {
             System.err.println("Erro ao buscar notícias: " + e.getMessage());
             return Map.of("error", "Notícias não encontradas");
+        }
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "stockHistory", key = "#ticker")
+    public List<Map<String, Object>> getStockHistory(String ticker) {
+        try {
+            String url = this.marketMicroserviceUrl + "/b3/history/" + ticker;
+            ResponseEntity<Map> response = httpFetch.get(url, Map.of("Accept", "application/json"), Map.class);
+            if (response.getBody() != null && response.getBody().containsKey("history")) {
+                return (List<Map<String, Object>>) response.getBody().get("history");
+            }
+            return List.of();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar histórico: " + e.getMessage());
+            return List.of();
         }
     }
 }
