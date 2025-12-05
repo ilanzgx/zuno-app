@@ -131,7 +131,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         List<PortfolioHistoryResponse> history = new ArrayList<>();
         LocalDate today = LocalDate.now();
 
-        for (int i = 5; i >= 0; i--) {
+        for (int i = 11; i >= 0; i--) {
             LocalDate targetDate = today.minusMonths(i);
             String monthKey = targetDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
 

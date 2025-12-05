@@ -5,3 +5,8 @@ export interface PortfolioSummary {
   percentageProfit: number;
   allocation: { type: string; value: number; percentage: number }[];
 }
+
+export interface PortfolioHistory {
+  label: string;
+  value: number;
+}

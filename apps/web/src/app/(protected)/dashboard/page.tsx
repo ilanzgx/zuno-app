@@ -26,17 +26,14 @@ import {
 } from "recharts";
 import { getTransactionsByUser } from "@/resources/transaction/transaction.service";
 import { Transaction } from "@/resources/transaction/transaction.entity";
-import { getSummary } from "@/resources/portfolio/portfolio.service";
-import { PortfolioSummary } from "@/resources/portfolio/portfolio.types";
-
-const dataPatrimonio = [
-  { name: "Jan", patrimoniobruto: 10000, valorInvestido: 8000 },
-  { name: "Fev", patrimoniobruto: 12000, valorInvestido: 9500 },
-  { name: "Mar", patrimoniobruto: 11500, valorInvestido: 9800 },
-  { name: "Abr", patrimoniobruto: 15000, valorInvestido: 11000 },
-  { name: "Mai", patrimoniobruto: 18000, valorInvestido: 13000 },
-  { name: "Jun", patrimoniobruto: 22000, valorInvestido: 15000 },
-];
+import {
+  getSummary,
+  getHistory,
+} from "@/resources/portfolio/portfolio.service";
+import {
+  PortfolioSummary,
+  PortfolioHistory,
+} from "@/resources/portfolio/portfolio.types";
 
 const COLORS = [
   "#EC4899",
@@ -59,15 +56,18 @@ const translateAssetType = (type: string): string => {
 export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [summary, setSummary] = useState<PortfolioSummary | null>(null);
+  const [history, setHistory] = useState<PortfolioHistory[]>([]);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
   const [loadingSummary, setLoadingSummary] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [transactionsData, summaryData] = await Promise.all([
+        const [transactionsData, summaryData, historyData] = await Promise.all([
           getTransactionsByUser(),
           getSummary(),
+          getHistory(),
         ]);
 
         const sortedData = (transactionsData || []).sort(
@@ -76,11 +76,13 @@ export default function Dashboard() {
         );
         setTransactions(sortedData.slice(0, 5));
         setSummary(summaryData);
+        setHistory(historyData || []);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
         setLoadingTransactions(false);
         setLoadingSummary(false);
+        setLoadingHistory(false);
       }
     }
 
@@ -196,17 +198,13 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="col-span-2">
           <CardHeader>
-            <CardTitle>Patrimonio histórico</CardTitle>
+            <CardTitle>Patrimônio histórico</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            {loadingSummary ? (
+            {loadingHistory ? (
               <div className="h-[350px] flex flex-col p-4 pt-2">
                 {/* Legend skeleton */}
                 <div className="flex items-center justify-center gap-6 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-3 w-8" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
                   <div className="flex items-center gap-2">
                     <Skeleton className="h-3 w-8" />
                     <Skeleton className="h-3 w-24" />
@@ -225,9 +223,8 @@ export default function Dashboard() {
                       <Skeleton className="h-3 w-6" />
                     </div>
 
-                    {/* Mountain chart skeleton - two overlapping areas */}
+                    {/* Mountain chart skeleton */}
                     <div className="flex-1 relative h-[240px]">
-                      {/* Upper area (Patrimônio Bruto) */}
                       <div className="absolute inset-0 flex items-end justify-between gap-1 px-2">
                         <Skeleton className="h-[45%] w-[14%] rounded-t-sm bg-gray-400" />
                         <Skeleton className="h-[60%] w-[14%] rounded-t-sm bg-gray-400" />
@@ -235,16 +232,6 @@ export default function Dashboard() {
                         <Skeleton className="h-[75%] w-[14%] rounded-t-sm bg-gray-400" />
                         <Skeleton className="h-[85%] w-[14%] rounded-t-sm bg-gray-400" />
                         <Skeleton className="h-full w-[14%] rounded-t-sm bg-gray-400" />
-                      </div>
-
-                      {/* Lower area (Valor Investido) - slightly transparent effect */}
-                      <div className="absolute inset-0 flex items-end justify-between gap-1 px-2 opacity-60">
-                        <Skeleton className="h-[35%] w-[14%] rounded-t-sm" />
-                        <Skeleton className="h-[48%] w-[14%] rounded-t-sm" />
-                        <Skeleton className="h-[45%] w-[14%] rounded-t-sm" />
-                        <Skeleton className="h-[58%] w-[14%] rounded-t-sm" />
-                        <Skeleton className="h-[68%] w-[14%] rounded-t-sm" />
-                        <Skeleton className="h-[80%] w-[14%] rounded-t-sm" />
                       </div>
                     </div>
                   </div>
@@ -260,11 +247,17 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+            ) : history.length === 0 ? (
+              <div className="h-[350px] flex items-center justify-center">
+                <p className="text-muted-foreground">
+                  Sem dados históricos disponíveis
+                </p>
+              </div>
             ) : (
               <div className="h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
-                    data={dataPatrimonio}
+                    data={history}
                     margin={{
                       top: 20,
                       right: 30,
@@ -274,7 +267,7 @@ export default function Dashboard() {
                   >
                     <defs>
                       <linearGradient
-                        id="colorPatrimonioBruto"
+                        id="colorPatrimonio"
                         x1="0"
                         y1="0"
                         x2="0"
@@ -288,24 +281,6 @@ export default function Dashboard() {
                         <stop
                           offset="95%"
                           stopColor="#3B82F6"
-                          stopOpacity={0.05}
-                        />
-                      </linearGradient>
-                      <linearGradient
-                        id="colorValorInvestido"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#06B6D4"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#06B6D4"
                           stopOpacity={0.05}
                         />
                       </linearGradient>
@@ -316,7 +291,7 @@ export default function Dashboard() {
                       stroke="#E5E7EB"
                     />
                     <XAxis
-                      dataKey="name"
+                      dataKey="label"
                       stroke="#9CA3AF"
                       fontSize={11}
                       tickLine={false}
@@ -351,40 +326,19 @@ export default function Dashboard() {
                       height={36}
                       iconType="line"
                       wrapperStyle={{ fontSize: "12px", paddingBottom: "10px" }}
-                      formatter={(value) => {
-                        if (value === "patrimoniobruto")
-                          return "Patrimônio Bruto";
-                        if (value === "valorInvestido")
-                          return "Valor Investido";
-                        return value;
-                      }}
+                      formatter={() => "Patrimônio"}
                     />
                     <Area
                       type="monotone"
-                      dataKey="patrimoniobruto"
+                      dataKey="value"
                       stroke="#3B82F6"
                       strokeWidth={2.5}
-                      fill="url(#colorPatrimonioBruto)"
+                      fill="url(#colorPatrimonio)"
                       opacity={1}
                       dot={false}
                       activeDot={{
                         r: 5,
                         fill: "#3B82F6",
-                        strokeWidth: 2,
-                        stroke: "#fff",
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="valorInvestido"
-                      stroke="#06B6D4"
-                      strokeWidth={2.5}
-                      fill="url(#colorValorInvestido)"
-                      opacity={1}
-                      dot={false}
-                      activeDot={{
-                        r: 5,
-                        fill: "#06B6D4",
                         strokeWidth: 2,
                         stroke: "#fff",
                       }}
