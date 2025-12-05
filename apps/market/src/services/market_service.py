@@ -165,3 +165,24 @@ class MarketService:
         return {
             "news": all_news
         }
+
+    def get_b3_stock_history(self, ticker: str, period: str = "1y", interval: str = "1mo"):
+        symbol = self._format_ticker(ticker)
+        stock = yf.Ticker(symbol)
+
+        history = stock.history(period=period, interval=interval)
+        history_data = []
+
+        if not history.empty:
+            history = history.reset_index()
+            for _, row in history.iterrows():
+                date_str = row['Date'].strftime('%Y-%m')
+                history_data.append({
+                    "date": date_str,
+                    "close": float(row['Close'])
+                })
+
+        return {
+            "ticker": ticker,
+            "history": history_data
+        }
