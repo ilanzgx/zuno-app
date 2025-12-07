@@ -109,6 +109,79 @@ class StubMarketService:
             ]
         }
 
+    def get_b3_news_for_tickers(self, tickers: list[str]):
+        if "ERROR" in tickers:
+            return None
+
+        if "EXCEPTION" in tickers:
+            raise Exception("Simulated API error")
+
+        news = []
+        for ticker in tickers:
+            if ticker == "PETR4":
+                news.append({
+                    "id": "a1",
+                    "content": {
+                        "id": "b1",
+                        "title": "Petrobras title",
+                        "summary": "Petrobras summary"
+                    },
+                    "relatedTicker": "PETR4"
+                })
+            elif ticker == "VALE3":
+                news.append({
+                    "id": "a2",
+                    "content": {
+                        "id": "b2",
+                        "title": "Vale title",
+                        "summary": "Vale summary"
+                    },
+                    "relatedTicker": "VALE3"
+                })
+            else:
+                news.append({
+                    "id": f"news_{ticker}",
+                    "content": {
+                        "id": f"content_{ticker}",
+                        "title": f"{ticker} news title",
+                        "summary": f"{ticker} news summary"
+                    },
+                    "relatedTicker": ticker
+                })
+
+        return {"news": news}
+
+    def get_b3_news_data(self, ticker: str):
+        if ticker == "ERROR":
+            return None
+
+        if ticker == "EXCEPTION":
+            raise Exception("Simulated API error")
+
+        return {
+            "ticker": ticker,
+            "news": [
+                {
+                    "id": "a1",
+                    "content": {
+                        "id": "b1",
+                        "title": "Petrobras title1",
+                        "summary": "Petrobras summary1"
+                    },
+                    "relatedTicker": ticker
+                },
+                {
+                    "id": "a2",
+                    "content": {
+                        "id": "b2",
+                        "title": "Petrobras title2",
+                        "summary": "Petrobras summary2"
+                    },
+                    "relatedTicker": ticker
+                }
+            ]
+        }
+
 
 # Fixtures
 @pytest.fixture
