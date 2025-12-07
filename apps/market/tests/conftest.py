@@ -71,6 +71,44 @@ class StubMarketService:
             ]
         }
 
+    def get_b3_stock_history(self, ticker: str, period: str = "1y", interval: str = "1mo"):
+        if ticker == "ERROR":
+            return None
+
+        if ticker == "EXCEPTION":
+            raise Exception("Simulated API error")
+
+        if period == "6mo":
+            return {
+                "ticker": ticker,
+                "history": [
+                    {"date": "2025-01", "close": 30},
+                    {"date": "2025-02", "close": 40},
+                    {"date": "2025-03", "close": 50},
+                    {"date": "2025-04", "close": 60},
+                    {"date": "2025-05", "close": 70},
+                    {"date": "2025-06", "close": 80},
+                ]
+            }
+
+        return {
+            "ticker": ticker,
+            "history": [
+                {"date": "2025-01", "close": 30},
+                {"date": "2025-02", "close": 40},
+                {"date": "2025-03", "close": 50},
+                {"date": "2025-04", "close": 60},
+                {"date": "2025-05", "close": 70},
+                {"date": "2025-06", "close": 80},
+                {"date": "2025-07", "close": 90},
+                {"date": "2025-08", "close": 100},
+                {"date": "2025-09", "close": 110},
+                {"date": "2025-10", "close": 120},
+                {"date": "2025-11", "close": 130},
+                {"date": "2025-12", "close": 140},
+            ]
+        }
+
 
 # Fixtures
 @pytest.fixture
@@ -82,6 +120,8 @@ def override_service():
 
     app.dependency_overrides[get_service_quote] = lambda: stub
     app.dependency_overrides[get_service_dividends] = lambda: stub
+    app.dependency_overrides[get_service_history] = lambda: stub
+    app.dependency_overrides[get_service_news] = lambda: stub
 
     yield
     app.dependency_overrides.clear()
