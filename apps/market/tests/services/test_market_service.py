@@ -171,7 +171,7 @@ class TestGetB3DividendsData:
     def test_get_b3_dividends_data_with_date_error(self, market_service, mocker):
         """
         Testa quando uma data inválida é fornecida
-        Verifica se o ValueError é capturado e retorna todos os dividendos sem filtrar
+        Verifica se o ValueError é lançado
         """
         # Arrange
         mock_ticker_instance = mocker.MagicMock()
@@ -261,3 +261,57 @@ class TestGetB3NewsForTickers:
         assert "news" in result
         assert len(result["news"]) == 0
 
+class TestGetB3StockHistory:
+    def test_get_b3_stock_history_success(self, market_service, mocker):
+        """
+        Testa get_b3_stock_history com sucesso
+        """
+        # Arrange
+        mock_hist_data = pd.DataFrame({
+            'Close': [101.0, 102.0, 103.0, 104.0, 105.0, 106.0]
+        }, index=pd.to_datetime([
+            '2025-01-01', '2025-02-01', '2025-03-01',
+            '2025-04-01', '2025-05-01', '2025-06-01'
+        ]))
+        mock_hist_data.index.name = 'Date'
+
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.history.return_value = mock_hist_data
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_stock_history("TAEE11")
+
+        # Assert
+        assert result is not None
+        assert result["ticker"] == "TAEE11"
+        assert "history" in result
+        assert len(result["history"]) == 6
+
+        for item in result["history"]:
+            assert "date" in item
+            assert "close" in item
+
+        assert result["history"][0]["date"] == "2025-01"
+        assert result["history"][0]["close"] == 101.0
+        assert result["history"][5]["date"] == "2025-06"
+        assert result["history"][5]["close"] == 106.0
+
+    def test_get_b3_stock_history_no_data_available(self, market_service, mocker):
+        """
+        Testa get_b3_stock_history quando não há dados disponíveis
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.history.return_value = pd.DataFrame()
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_stock_history("FAKE_TICKER")
+
+        # Assert
+        assert result is not None
+        assert result["ticker"] == "FAKE_TICKER"
+        assert result["history"] == []
