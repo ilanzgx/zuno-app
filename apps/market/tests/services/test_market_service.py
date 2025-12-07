@@ -187,3 +187,77 @@ class TestGetB3DividendsData:
         with pytest.raises(ValueError):
             market_service.get_b3_dividends_data("TAEE11", "2024-10-29")
 
+class TestGetB3NewsForTickers:
+    def test_get_b3_news_for_tickers_success(self, market_service, mocker):
+        """
+        Testa get_b3_news_for_tickers (2 tickers) com sucesso
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.news = [
+            {
+                'title': 'News about TAEE11',
+                'link': 'https://example.com/news1',
+                'providerPublishTime': 1733500000  # mais recente
+            },
+            {
+                'title': 'Another news about TAEE11',
+                'link': 'https://example.com/news2',
+                'providerPublishTime': 1733400000  # mais antigo
+            }
+        ]
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_news_for_tickers(["TAEE11", "PETR4"])
+
+        # Assert
+        assert result is not None
+        assert "news" in result
+        # 2 tickers x 2 notícias cada = 4 notícias no total
+        assert len(result["news"]) == 4
+
+        for news_item in result["news"]:
+            assert "relatedTicker" in news_item
+            assert news_item["relatedTicker"] in ["TAEE11", "PETR4"]
+
+        timestamps = [item.get('providerPublishTime', 0) for item in result["news"]]
+        assert timestamps == sorted(timestamps, reverse=True)
+
+    def test_get_b3_news_for_tickers_no_data_available(self, market_service, mocker):
+        """
+        Testa get_b3_news_for_tickers quando não há dados disponíveis
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.news = []
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_news_for_tickers(["TAEE11", "PETR4"])
+
+        # Assert
+        assert result is not None
+        assert "news" in result
+        assert len(result["news"]) == 0
+
+    def test_get_b3_news_for_tickers_with_invalid_ticker(self, market_service, mocker):
+        """
+        Testa get_b3_news_for_tickers com um ticker inválido
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.news = []
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_news_for_tickers(["INVALID_TICKER"])
+
+        # Assert
+        assert result is not None
+        assert "news" in result
+        assert len(result["news"]) == 0
+

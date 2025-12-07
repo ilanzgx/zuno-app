@@ -102,6 +102,7 @@ class MarketService:
             "dividends": dividends_formatted
         }
 
+    # WARNING: Esse método não é usado ainda
     def get_crypto_quote_data(self, ticker: str) -> dict:
         symbol = ticker.upper()
         coin_data = yf.download(tickers=symbol, period="1mo", auto_adjust=True, progress=False)
@@ -125,6 +126,7 @@ class MarketService:
             "currency": "BRL"
         }
 
+    # WARNING: Esse método não é usado ainda
     def get_usd_to_brl(self) -> dict:
         usd_brl = yf.Ticker("BRL=X")
 
@@ -138,6 +140,7 @@ class MarketService:
             "regularMarketPrice": info.get("regularMarketPrice")
         }
 
+    # WARNING: Esse método é usado, mas não é muito útil
     def get_b3_news_data(self, ticker: str) -> dict:
         symbol = self._format_ticker(ticker)
         ticker_obj = yf.Ticker(symbol)
