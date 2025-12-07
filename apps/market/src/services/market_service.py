@@ -93,7 +93,7 @@ class MarketService:
                 }
 
             except ValueError as e:
-                print(f"Error {from_date}: {e}")
+                raise ValueError(f"Error {from_date}: {e}")
 
         dividends_formatted = {str(k): v for k, v in dividends.items()}
 

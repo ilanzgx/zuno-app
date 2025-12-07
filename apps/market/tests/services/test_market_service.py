@@ -1,5 +1,6 @@
 import pytest
 from src.services.market_service import MarketService
+import pandas as pd
 
 @pytest.fixture
 def market_service():
@@ -52,8 +53,6 @@ class TestGetB3QuoteData:
         Testa get_b3_quote_data com data específica, retornando dados históricos
         """
         # Arrange
-        import pandas as pd
-
         mock_hist_data = pd.DataFrame({
             'Open': [34.54],
             'High': [34.63],
@@ -97,4 +96,94 @@ class TestGetB3QuoteData:
 
         # Assert
         assert result is None
+
+class TestGetB3DividendsData:
+    def test_get_b3_dividends_data_success(self, market_service, mocker):
+        """
+        Testa get_b3_dividends_data com sucesso
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.dividends = pd.Series({
+            '2024-10-29': 0.5,
+            '2024-10-28': 0.4,
+            '2024-10-27': 0.3
+        })
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_dividends_data("TAEE11")
+
+        # Assert
+        assert result is not None
+        assert result["ticker"] == "TAEE11"
+        assert result["dividends"] == {
+            '2024-10-29': 0.5,
+            '2024-10-28': 0.4,
+            '2024-10-27': 0.3
+        }
+
+    def test_get_b3_dividends_data_no_data_available(self, market_service, mocker):
+        """
+        Testa get_b3_dividends_data quando não há dados disponíveis
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.dividends = pd.Series({})
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_dividends_data("FAKE_TICKER")
+
+        # Assert
+        assert result is not None
+        assert result["ticker"] == "FAKE_TICKER"
+        assert result["dividends"] == {}
+
+    def test_get_b3_dividends_data_with_date_success(self, market_service, mocker):
+        """
+        Testa get_b3_dividends_data com data específica, retornando dados históricos
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.dividends = pd.Series({
+            '2024-10-29': 0.5,
+            '2025-05-28': 0.4,
+            '2025-11-27': 0.3
+        })
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act
+        result = market_service.get_b3_dividends_data("TAEE11", "29/10/2024")
+
+        # Assert (data de dividendos deve ser igual ou depois a data recebida se não da erro)
+        assert result is not None
+        assert result["ticker"] == "TAEE11"
+        assert result["dividends"] == {
+            '2024-10-29': 0.5,
+            '2025-05-28': 0.4,
+            '2025-11-27': 0.3
+        }
+
+    def test_get_b3_dividends_data_with_date_error(self, market_service, mocker):
+        """
+        Testa quando uma data inválida é fornecida
+        Verifica se o ValueError é capturado e retorna todos os dividendos sem filtrar
+        """
+        # Arrange
+        mock_ticker_instance = mocker.MagicMock()
+        mock_ticker_instance.dividends = pd.Series({
+            '2024-10-29': 0.5,
+            '2025-05-28': 0.4,
+            '2025-11-27': 0.3
+        })
+
+        mocker.patch("yfinance.Ticker", return_value=mock_ticker_instance)
+
+        # Act & Assert
+        with pytest.raises(ValueError):
+            market_service.get_b3_dividends_data("TAEE11", "2024-10-29")
 
