@@ -67,6 +67,7 @@ class MarketService:
 
         return {
             "ticker": ticker,
+            "regularMarketPrice": info.get("regularMarketPrice"),
             "dividendYield": info.get("dividendYield"),
             "trailingPE": info.get("trailingPE"),
             "forwardPE": info.get("forwardPE"),
