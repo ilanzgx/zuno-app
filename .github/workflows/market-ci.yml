@@ -25,6 +25,6 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run Tests
-        run: uv run pytest tests/
+        run: uv run pytest tests/ -v
         env:
           PYTHONPATH: .
