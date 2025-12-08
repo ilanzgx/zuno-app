@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/user.store";
 import { useEffect, useState } from "react";
 import { CreateTransactionDialog } from "@/components/create-transaction-dialog";
+import { CreateReportDialog } from "@/components/create-report-dialog";
 
 // Menu items - Navegação principal
 const navigationItems = [
@@ -72,6 +73,7 @@ export function AppSidebar() {
   const user = useUserStore((state) => state.user);
   const [isMounted, setIsMounted] = useState(false);
   const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -137,11 +139,13 @@ export function AppSidebar() {
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild size="sm" className="h-9">
-                  <a href="/relatorios" className="text-sm font-medium">
-                    <FileText className="size-4" />
-                    <span>Gerar relatório</span>
-                  </a>
+                <SidebarMenuButton
+                  size="sm"
+                  className="h-9 cursor-pointer font-medium"
+                  onClick={() => setIsReportDialogOpen(true)}
+                >
+                  <FileText className="size-4" />
+                  <span>Gerar relatório</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
@@ -207,6 +211,11 @@ export function AppSidebar() {
       <CreateTransactionDialog
         open={isTransactionDialogOpen}
         onOpenChange={setIsTransactionDialogOpen}
+      />
+
+      <CreateReportDialog
+        open={isReportDialogOpen}
+        onOpenChange={setIsReportDialogOpen}
       />
     </Sidebar>
   );
