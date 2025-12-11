@@ -95,13 +95,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Resumo da carteira
+      <div className="my-4">
+        <h1 className="text-lg font-medium tracking-tight text-gray-900">
+          Dashboard
         </h1>
-        <p className="text-muted-foreground">
-          Visão geral da sua carteira de investimentos.
-        </p>
       </div>
 
       <div className="grid gap-2 md:grid-cols-3">

@@ -30,7 +30,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div className="bg-white/95 border border-gray-200 rounded-lg px-4 py-3 shadow-xl backdrop-blur-sm">
         <p className="text-gray-600 text-xs font-medium mb-2">{label}</p>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{ backgroundColor: "#549d8c" }}
+          ></div>
           <span className="text-gray-900 text-sm font-semibold">
             Patrimônio {formattedValue}
           </span>
@@ -66,18 +69,18 @@ export function PortfolioChart({ history, loading }: PortfolioChartProps) {
                 {/* Mountain chart skeleton */}
                 <div className="flex-1 relative h-[240px]">
                   <div className="absolute inset-0 flex items-end justify-between gap-1 px-2">
-                    <Skeleton className="h-[45%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[60%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[55%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[75%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[85%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[70%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[80%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[65%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[90%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-full w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[95%] w-[7%] rounded-t-sm bg-blue-100" />
-                    <Skeleton className="h-[85%] w-[7%] rounded-t-sm bg-blue-100" />
+                    <Skeleton className="h-[45%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[60%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[55%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[75%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[85%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[70%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[80%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[65%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[90%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-full w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[95%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
+                    <Skeleton className="h-[85%] w-[7%] rounded-t-sm bg-[#549d8c]/20" />
                   </div>
                 </div>
               </div>
@@ -114,11 +117,11 @@ export function PortfolioChart({ history, loading }: PortfolioChartProps) {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.4} />
-                    <stop offset="50%" stopColor="#60A5FA" stopOpacity={0.2} />
+                    <stop offset="0%" stopColor="#549d8c" stopOpacity={0.4} />
+                    <stop offset="50%" stopColor="#6bb3a3" stopOpacity={0.2} />
                     <stop
                       offset="100%"
-                      stopColor="#93C5FD"
+                      stopColor="#8cc9bb"
                       stopOpacity={0.05}
                     />
                   </linearGradient>
@@ -156,22 +159,22 @@ export function PortfolioChart({ history, loading }: PortfolioChartProps) {
                 <Area
                   type="monotone"
                   dataKey="value"
-                  stroke="#3B82F6"
+                  stroke="#549d8c"
                   strokeWidth={2.5}
                   fill="url(#colorPatrimonioGradient)"
                   dot={{
-                    fill: "#3B82F6",
+                    fill: "#549d8c",
                     strokeWidth: 2,
                     stroke: "#fff",
                     r: 4,
                   }}
                   activeDot={{
                     r: 6,
-                    fill: "#3B82F6",
+                    fill: "#549d8c",
                     strokeWidth: 2,
                     stroke: "#fff",
                     style: {
-                      filter: "drop-shadow(0 0 6px rgba(59, 130, 246, 0.6))",
+                      filter: "drop-shadow(0 0 6px rgba(84, 157, 140, 0.6))",
                     },
                   }}
                 />
