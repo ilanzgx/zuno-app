@@ -15,16 +15,19 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { signUpSchema } from "@/resources/user/user.schemas";
 import { signUp } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Image from "next/image";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Registrar() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const isSubmittingRef = useRef<boolean>(false);
   const router = useRouter();
 
   const signUpForm = useForm<z.infer<typeof signUpSchema>>({
@@ -38,14 +41,20 @@ export default function Registrar() {
   });
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    console.log(values);
+    if (isSubmittingRef.current) {
+      return;
+    }
+
     try {
+      isSubmittingRef.current = true;
+      setLoading(true);
       await signUp(values);
       toast.success("Conta criada com sucesso!");
-
       router.push("/dashboard");
     } catch (err) {
       toast.error("Erro ao criar conta. Tente novamente.");
+      setLoading(false);
+      isSubmittingRef.current = false;
     }
   }
 
@@ -197,8 +206,9 @@ export default function Registrar() {
               <Button
                 type="submit"
                 className="w-full h-11 bg-gradient-to-r from-[#549d8c] to-[#2e6669] hover:from-[#498a7d] hover:to-[#235256] text-white font-medium cursor-pointer"
+                disabled={loading}
               >
-                Criar conta
+                {loading ? <Spinner className="size-6" /> : "Criar conta"}
               </Button>
             </form>
           </Form>

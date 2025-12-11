@@ -15,15 +15,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { signInSchema } from "@/resources/user/user.schemas";
 import { signIn } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Image from "next/image";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Entrar() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const isSubmittingRef = useRef<boolean>(false);
   const router = useRouter();
 
   const signInForm = useForm<z.infer<typeof signInSchema>>({
@@ -35,14 +37,20 @@ export default function Entrar() {
   });
 
   async function onSubmit(values: z.infer<typeof signInSchema>) {
-    console.log(values);
+    if (isSubmittingRef.current) {
+      return;
+    }
+
     try {
-      console.log(process.env.NEXT_PUBLIC_API_URL);
+      isSubmittingRef.current = true;
+      setLoading(true);
       await signIn(values);
       toast.success("Login realizado com sucesso!");
       router.push("/dashboard");
     } catch (err) {
       toast.error("Erro ao realizar login. Verifique suas credenciais.");
+      setLoading(false);
+      isSubmittingRef.current = false;
     }
   }
 
@@ -133,8 +141,9 @@ export default function Entrar() {
               <Button
                 type="submit"
                 className="w-full h-11 bg-gradient-to-r from-[#549d8c] to-[#2e6669] hover:from-[#498a7d] hover:to-[#235256] text-white font-medium cursor-pointer"
+                disabled={loading}
               >
-                Entrar
+                {loading ? <Spinner className="size-6" /> : "Entrar"}
               </Button>
             </form>
           </Form>
