@@ -30,9 +30,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { signOut } from "@/resources/user/user.service";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/user.store";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { CreateTransactionDialog } from "@/components/create-transaction-dialog";
 import { CreateReportDialog } from "@/components/create-report-dialog";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 // Menu items - Navegação principal
 const navigationItems = [
@@ -74,14 +76,29 @@ export function AppSidebar() {
   const [isMounted, setIsMounted] = useState(false);
   const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const isSigningOutRef = useRef(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   async function handleSignOut() {
-    await signOut();
-    router.push("/entrar");
+    if (isSigningOutRef.current) {
+      return;
+    }
+
+    try {
+      isSigningOutRef.current = true;
+      setIsSigningOut(true);
+      await signOut();
+      toast.success("Sessão encerrada com sucesso!");
+      router.push("/entrar");
+    } catch (err) {
+      toast.error("Erro ao encerrar sessão. Tente novamente.");
+      setIsSigningOut(false);
+      isSigningOutRef.current = false;
+    }
   }
 
   return (
@@ -200,9 +217,19 @@ export function AppSidebar() {
             <SidebarMenuButton
               className="cursor-pointer"
               onClick={handleSignOut}
+              disabled={isSigningOut}
             >
-              <LogOut />
-              <span>Sair</span>
+              {isSigningOut ? (
+                <>
+                  <Spinner className="size-4" />
+                  <span>Saindo...</span>
+                </>
+              ) : (
+                <>
+                  <LogOut />
+                  <span>Sair</span>
+                </>
+              )}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
