@@ -190,3 +190,18 @@ class MarketService:
             "ticker": ticker,
             "history": history_data
         }
+
+    def get_b3_stock_history_for_tickers(self, tickers: list[str], period: str = "1y", interval: str = "1mo") -> dict:
+        all_history = []
+        for ticker in tickers:
+            try:
+                data = self.get_b3_stock_history(ticker, period, interval)
+                if data:
+                    all_history.append(data)
+            except Exception as e:
+                print(f"Error fetching history for {ticker}: {e}")
+                continue
+
+        return {
+            "histories": all_history
+        }
