@@ -5,5 +5,6 @@ export interface Position {
   ticker: string;
   quantity: number;
   averagePrice: number;
+  assetType: "STOCK" | "FII" | "BDR";
   positionData?: PositionData;
 }
