@@ -106,9 +106,13 @@ export default function Dashboard() {
           <CardContent>
             <CardTitle className="text-sm font-medium">Saldo Bruto</CardTitle>
             {loadingSummary ? (
-              <div className="space-y-2">
-                <Skeleton className="h-8 w-[140px]" />
-                <Skeleton className="h-4 w-[180px]" />
+              <div className="space-y-4">
+                <Skeleton className="h-7 w-[140px]" />
+                <Separator />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[160px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                </div>
               </div>
             ) : (
               <>
@@ -150,9 +154,13 @@ export default function Dashboard() {
               Valor Aplicado
             </CardTitle>
             {loadingSummary ? (
-              <div className="space-y-2">
-                <Skeleton className="h-8 w-[140px]" />
-                <Skeleton className="h-4 w-[120px]" />
+              <div className="space-y-4">
+                <Skeleton className="h-7 w-[140px]" />
+                <Separator />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[120px]" />
+                  <Skeleton className="h-4 w-[180px]" />
+                </div>
               </div>
             ) : (
               <>
@@ -179,9 +187,13 @@ export default function Dashboard() {
           <CardContent>
             <CardTitle className="text-sm font-medium">Rentabilidade</CardTitle>
             {loadingSummary ? (
-              <div className="space-y-2">
-                <Skeleton className="h-8 w-[100px]" />
-                <Skeleton className="h-4 w-[160px]" />
+              <div className="space-y-4">
+                <Skeleton className="h-7 w-[100px]" />
+                <Separator />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[140px]" />
+                  <Skeleton className="h-4 w-[180px]" />
+                </div>
               </div>
             ) : (
               <>
