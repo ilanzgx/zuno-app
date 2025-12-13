@@ -309,27 +309,29 @@ A Market API fornece dados em tempo real do mercado financeiro:
 O projeto é um **monorepo** com a seguinte estrutura:
 
 ```text
-consolidador-investimentos/
+zuno-app/
 ├── apps/
 │   ├── api/                    # Backend Spring Boot
 │   │   ├── src/
 │   │   │   └── main/
 │   │   │       └── java/
 │   │   │           └── com/ilanzgx/demo/
-│   │   │               ├── auth/
-│   │   │               ├── config/
-│   │   │               ├── dividend/
-│   │   │               ├── market/
-│   │   │               ├── portfolio/
-│   │   │               ├── position/
-│   │   │               ├── transaction/
-│   │   │               └── user/
+│   │   │             └── config/
+│   │   │             └── modules/
+│   │   │                 ├── auth/
+│   │   │                 ├── dividend/
+│   │   │                 ├── market/
+│   │   │                 ├── portfolio/
+│   │   │                 ├── position/
+│   │   │                 ├── shared/
+│   │   │                 ├── transaction/
+│   │   │                 └── user/
 │   │   └── pom.xml
 │   │
 │   ├── market/                 # Market API (FastAPI)
 │   │   ├── app/
 │   │   │   ├── api/
-│   │   │   │   └── routes/
+│   │   │   │   └── v1/
 │   │   │   ├── core/
 │   │   │   └── services/
 │   │   ├── pyproject.toml
@@ -350,29 +352,6 @@ consolidador-investimentos/
 ├── package.json
 └── README.md
 ```
-
-<p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
-
-<!-- ROADMAP -->
-
-## Roadmap
-
-- [x] Autenticação e autorização com JWT
-- [x] CRUD de transações e posições
-- [x] Dashboard com visualização de patrimônio
-- [x] Integração com dados de mercado (B3)
-- [x] Sistema de dividendos
-- [x] Gráficos interativos de evolução patrimonial
-- [ ] Importação automática de extratos de corretoras
-- [ ] Análise de rentabilidade por setor
-- [ ] Alertas de preços e dividendos
-- [ ] Aplicativo mobile
-- [ ] Aplicativo desktop
-- [ ] Integração com mais fontes de dados
-- [ ] Recomendações de rebalanceamento de carteira
-- [ ] Suporte a criptomoedas
-
-Veja as [issues abertas](https://github.com/ilanzgx/zuno-app/issues) para uma lista completa de features propostas e problemas conhecidos.
 
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
@@ -420,27 +399,6 @@ Link do Projeto: [https://github.com/ilanzgx/zuno-app](https://github.com/ilanzg
 
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
-<!-- ACKNOWLEDGMENTS -->
-
-## Agradecimentos
-
-Recursos e ferramentas que tornaram este projeto possível:
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [shadcn/ui Components](https://ui.shadcn.com/)
-- [Yahoo Finance API (yfinance)](https://github.com/ranaroussi/yfinance)
-- [Recharts - React Charts Library](https://recharts.org/)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Lucide React Icons](https://lucide.dev/)
-- [Zustand State Management](https://zustand-demo.pmnd.rs/)
-- [React Hook Form](https://react-hook-form.com/)
-- [Zod Validation](https://zod.dev/)
-
-<p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
-
 <!-- MARKDOWN LINKS & IMAGES -->
 
 [contributors-shield]: https://img.shields.io/github/contributors/ilanzgx/zuno-app.svg?style=for-the-badge
@@ -455,7 +413,7 @@ Recursos e ferramentas que tornaram este projeto possível:
 [license-url]: https://github.com/ilanzgx/zuno-app/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/ilan-fonseca-665025154
-[product-screenshot]: https://i.imgur.com/4eS2AuH.png
+[product-screenshot]: https://i.imgur.com/RevjmCL.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
