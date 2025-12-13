@@ -123,10 +123,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         Set<String> tickers = transactions.stream().map(Transaction::getTicker).collect(Collectors.toSet());
 
-        Map<String, List<Map<String, Object>>> pricesMap = new HashMap<>();
-        for (String ticker : tickers) {
-            pricesMap.put(ticker, marketService.getStockHistory(ticker));
-        }
+        Map<String, List<Map<String, Object>>> pricesMap = marketService.getStockHistoryForTickers(tickers);
 
         List<PortfolioHistoryResponse> history = new ArrayList<>();
         LocalDate today = LocalDate.now();

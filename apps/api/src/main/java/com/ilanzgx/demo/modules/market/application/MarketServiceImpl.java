@@ -2,6 +2,7 @@ package com.ilanzgx.demo.modules.market.application;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -174,4 +175,38 @@ public class MarketServiceImpl implements MarketService {
             return List.of();
         }
     }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "stockHistoryMultiple", key = "#tickers.hashCode()")
+    public Map<String, List<Map<String, Object>>> getStockHistoryForTickers(Set<String> tickers) {
+        Map<String, List<Map<String, Object>>> result = new java.util.HashMap<>();
+
+        if (tickers == null || tickers.isEmpty()) {
+            return result;
+        }
+
+        try {
+            String tickersParam = String.join(",", tickers);
+            String url = this.marketMicroserviceUrl + "/b3/history?tickers=" + tickersParam;
+
+            ResponseEntity<Map> response = httpFetch.get(url, Map.of("Accept", "application/json"), Map.class);
+
+            if (response.getBody() != null && response.getBody().containsKey("histories")) {
+                List<Map<String, Object>> histories = (List<Map<String, Object>>) response.getBody().get("histories");
+
+                for (Map<String, Object> tickerHistory : histories) {
+                    String ticker = (String) tickerHistory.get("ticker");
+                    List<Map<String, Object>> history = (List<Map<String, Object>>) tickerHistory.get("history");
+                    result.put(ticker, history != null ? history : List.of());
+                }
+            }
+
+            return result;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar histórico para múltiplos tickers: " + e.getMessage());
+            return result;
+        }
+    }
 }
+

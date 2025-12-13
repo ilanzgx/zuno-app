@@ -2,6 +2,7 @@ package com.ilanzgx.demo.modules.market.domain;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface MarketService {
     Map<String, Object> getSimpleStockData(String ticker);
@@ -17,4 +18,7 @@ public interface MarketService {
     Map<String, Object> getStockNews(String ticker);
 
     List<Map<String, Object>> getStockHistory(String ticker);
+
+    Map<String, List<Map<String, Object>>> getStockHistoryForTickers(Set<String> tickers);
 }
+
