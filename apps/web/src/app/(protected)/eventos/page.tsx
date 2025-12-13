@@ -1,33 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useMemo, useState } from "react";
 import { getDividends } from "@/resources/dividend/dividend.service";
 import { UserDividendsResponse } from "@/resources/dividend/dividend.types";
-
-interface DividendEvent {
-  paymentDate: string;
-  eventType: "JSCP" | "Dividendo";
-  ticker: string;
-  totalAmount: number;
-  unitValue: number;
-  quantity: number;
-}
+import { EventsTable, DividendEvent } from "./components/events-table";
+import { EventsTableSkeleton } from "./components/events-table-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EventosPage() {
   const [events, setEvents] = useState<DividendEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<DividendEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const totalDividends = useMemo(() => {
+    return events.reduce((acc, event) => acc + event.totalAmount, 0);
+  }, [events]);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
 
   useEffect(() => {
     async function fetchDividends() {
@@ -77,6 +72,9 @@ export default function EventosPage() {
       const dividends = position.dividendsData.dividends;
       const transactions = position.transactions || [];
 
+      const assetType =
+        (transactions[0]?.assetType as "STOCK" | "FII" | "BDR") || "STOCK";
+
       const getQuantityAtDate = (targetDate: Date): number => {
         let quantity = 0;
 
@@ -111,6 +109,7 @@ export default function EventosPage() {
             unitValue: value,
             quantity: quantityAtDate,
             totalAmount: value * quantityAtDate,
+            assetType,
           });
         }
       });
@@ -124,17 +123,27 @@ export default function EventosPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
+      <div className="my-4">
+        <h1 className="text-lg font-medium tracking-tight text-gray-900">
           Proventos a receber
         </h1>
-        <p className="text-muted-foreground">
-          Visualize todos os dividendos e JCP das suas posições.
-        </p>
       </div>
 
       <div className="space-y-4">
         <div className="rounded-md border bg-card">
+          <div className="p-4 border-b">
+            <h2 className="text-sm text-muted-foreground">
+              Resultado histórico de proventos
+            </h2>
+            {loading ? (
+              <Skeleton className="h-8 w-32 mt-1" />
+            ) : (
+              <p className="text-2xl font-bold text-green-600">
+                {formatCurrency(totalDividends)}
+              </p>
+            )}
+          </div>
+
           <div className="p-4 flex gap-4 border-b">
             <input
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 max-w-sm"
@@ -151,123 +160,5 @@ export default function EventosPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-interface EventsTableProps {
-  events: DividendEvent[];
-}
-
-function EventsTable({ events }: EventsTableProps) {
-  if (events.length === 0) {
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        Nenhum provento encontrado.
-      </div>
-    );
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }).format(new Date(dateString));
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Data de Pgto.</TableHead>
-          <TableHead>Evento</TableHead>
-          <TableHead>Ativo</TableHead>
-          <TableHead className="text-right">A receber</TableHead>
-          <TableHead className="text-right">Valor unitário</TableHead>
-          <TableHead className="text-right">Quantidade</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {events.map((event, index) => {
-          const isJSCP = event.eventType === "JSCP";
-
-          return (
-            <TableRow key={`${event.ticker}-${event.paymentDate}-${index}`}>
-              <TableCell>{formatDate(event.paymentDate)}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={isJSCP ? "secondary" : "default"}
-                  className={
-                    isJSCP
-                      ? "bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200"
-                      : "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200"
-                  }
-                >
-                  {event.eventType}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="font-bold">{event.ticker}</div>
-              </TableCell>
-              <TableCell className="text-right font-medium">
-                {formatCurrency(event.totalAmount)}
-              </TableCell>
-              <TableCell className="text-right">
-                {formatCurrency(event.unitValue)}
-              </TableCell>
-              <TableCell className="text-right">{event.quantity}</TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
-  );
-}
-
-function EventsTableSkeleton() {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Data de Pgto.</TableHead>
-          <TableHead>Evento</TableHead>
-          <TableHead>Ativo</TableHead>
-          <TableHead className="text-right">A receber</TableHead>
-          <TableHead className="text-right">Valor unitário</TableHead>
-          <TableHead className="text-right">Quantidade</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {Array.from({ length: 8 }).map((_, index) => (
-          <TableRow key={index}>
-            <TableCell>
-              <Skeleton className="h-4 w-24" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-6 w-24 rounded-full" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-16" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-20 ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-16 ml-auto" />
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-12 ml-auto" />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
   );
 }

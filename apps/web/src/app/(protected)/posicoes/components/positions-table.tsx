@@ -64,6 +64,17 @@ export function PositionsTable({ positions }: PositionsTableProps) {
     ([_, positionsList]) => positionsList.length > 0
   );
 
+  function formatCurrency(value: number) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  }
+
+  function formatNumber(value: number) {
+    return new Intl.NumberFormat("pt-BR").format(value);
+  }
+
   return (
     <div className="rounded-lg overflow-hidden">
       {/* Header */}
@@ -106,7 +117,7 @@ export function PositionsTable({ positions }: PositionsTableProps) {
               value={assetType}
               className="border-b last:border-b-0"
             >
-              <AccordionTrigger className="hover:no-underline p-0 [&[data-state=open]_svg]:rotate-90">
+              <AccordionTrigger className="hover:no-underline p-0 [&[data-state=open]_svg]:rotate-90 cursor-pointer bg-gray-100">
                 <div className="grid grid-cols-[60px_minmax(200px,1fr)_120px_100px_120px_140px_140px_50px] gap-4 w-full px-4 py-3 text-sm">
                   <div className="flex items-center">
                     <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200" />
@@ -134,10 +145,7 @@ export function PositionsTable({ positions }: PositionsTableProps) {
                     -
                   </div>
                   <div className="flex items-center justify-end font-medium">
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(categoryTotals.totalInvested)}
+                    {formatCurrency(categoryTotals.totalInvested)}
                   </div>
                   <div
                     className={`flex items-center justify-end font-medium ${
@@ -147,10 +155,7 @@ export function PositionsTable({ positions }: PositionsTableProps) {
                         : "text-red-600"
                     }`}
                   >
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(categoryTotals.currentValue)}
+                    {formatCurrency(categoryTotals.currentValue)}
                   </div>
                   <div className="flex items-center"></div>
                 </div>
@@ -192,25 +197,16 @@ export function PositionsTable({ positions }: PositionsTableProps) {
                         </div>
                       </div>
                       <div className="flex items-center">
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(position.averagePrice)}
+                        {formatCurrency(position.averagePrice)}
                       </div>
                       <div className="flex items-center justify-end">
-                        {position.quantity}
+                        {formatNumber(position.quantity)}
                       </div>
                       <div className="flex items-center justify-end">
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(currentPrice)}
+                        {formatCurrency(currentPrice)}
                       </div>
                       <div className="flex items-center justify-end font-medium">
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(totalInvested)}
+                        {formatCurrency(totalInvested)}
                       </div>
                       <div
                         className={`flex items-center justify-end font-medium ${
@@ -219,10 +215,7 @@ export function PositionsTable({ positions }: PositionsTableProps) {
                             : "text-red-600"
                         }`}
                       >
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(currentValue)}
+                        {formatCurrency(currentValue)}
                       </div>
                     </div>
                   );
