@@ -1,28 +1,34 @@
-# Use Python 3.13 slim image
-FROM python:3.13-slim
+# ---------- builder ----------
+FROM python:3.13-slim AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Dependências nativas, se necessário
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency files
+# Criar venv isolado
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Instalar uv e dependências
 COPY pyproject.toml ./
+RUN pip install --no-cache-dir uv \
+ && uv pip install --no-cache .
 
-# Install uv for faster dependency management
-RUN pip install --no-cache-dir uv
+# ---------- runner ----------
+FROM python:3.13-slim AS runner
 
-# Install dependencies using uv
-RUN uv pip install --system --no-cache -r pyproject.toml
+WORKDIR /app
+RUN useradd -m appuser
 
-# Copy application source code
-COPY src ./src
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Expose port
+COPY --chown=appuser:appuser src ./src
+
+USER appuser
+
 EXPOSE 8000
-
-# Run the application with uvicorn
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

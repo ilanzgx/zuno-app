@@ -1,33 +1,40 @@
-# Stage 1: Dependências (com devDependencies para build)
-FROM node:24.4.1-bullseye AS deps
+FROM node:24-alpine AS base
 WORKDIR /app
+
+# ---------- deps ----------
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+
 COPY package.json package-lock.json ./
 RUN npm ci
-RUN npm rebuild lightningcss
 
-# Stage 2: Build
-FROM node:24.4.1-bullseye AS build
+# ---------- build ----------
+FROM base AS builder
 WORKDIR /app
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
 RUN npm run build
 
-# Stage 3: Runner (sem devDependencies, mais leve)
-FROM node:24.4.1-bullseye AS runner
+# ---------- runner ----------
+FROM base AS runner
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+ENV NODE_ENV=production
 
-# Copia apenas o necessário
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY --from=build /app/package.json ./package.json
+RUN addgroup -g 1001 -S nodejs \
+ && adduser -S nextjs -u 1001
 
-# Instala apenas dependências necessárias para produção
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --include=optional && npm rebuild lightningcss
+# Copia apenas o output standalone
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
+
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+CMD ["node", "server.js"]
