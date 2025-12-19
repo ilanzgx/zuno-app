@@ -22,6 +22,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { generateReport } from "@/resources/report/report.service";
 
 const reportSchema = z.object({
   format: z.enum(["PDF", "XLSX"], {
@@ -53,11 +55,42 @@ export function CreateReportDialog({
     setIsSubmitting(true);
 
     try {
-      console.log("Gerando relatório no formato:", data.format);
+      if (data.format === "XLSX") {
+        toast.info("Formato XLSX não suportado ainda");
+        return;
+      }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const result = await generateReport();
+
+      if (!result || !result.success) {
+        toast.error("Erro ao gerar relatório");
+        return;
+      }
+
+      // Converte base64 para Blob
+      const byteCharacters = atob(result.data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = result.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Relatório gerado!");
+
+      handleDialogChange(false);
     } catch (error) {
       console.error("Erro ao gerar relatório:", error);
+      toast.error("Erro ao gerar relatório");
     } finally {
       setIsSubmitting(false);
     }
