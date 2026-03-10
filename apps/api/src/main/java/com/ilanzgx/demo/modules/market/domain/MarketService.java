@@ -7,6 +7,8 @@ import java.util.Set;
 public interface MarketService {
     Map<String, Object> getSimpleStockData(String ticker);
 
+    Map<String, Map<String, Object>> getBulkStockData(Set<String> tickers);
+
     Map<String, Object> getFullStockData(String ticker);
 
     Map<String, Object> getStockDividendsData(String ticker, String fromDate);

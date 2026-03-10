@@ -54,6 +54,43 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Cacheable(value = "bulkStockData", key = "#tickers.hashCode()")
+    public Map<String, Map<String, Object>> getBulkStockData(Set<String> tickers) {
+        System.out.println("Buscando dados em lote (paralelo) para tickers: " + tickers);
+
+        Map<String, Map<String, Object>> result = new java.util.concurrent.ConcurrentHashMap<>();
+
+        if (tickers == null || tickers.isEmpty()) {
+            return result;
+        }
+
+        tickers.parallelStream().forEach(ticker -> {
+            try {
+                ResponseEntity<Map> response = httpFetch.get(
+                        this.apiUrl + "/api/quote/" + ticker,
+                        Map.of(
+                                "Authorization", "Bearer " + this.apiToken,
+                                "Accept", "application/json"),
+                        Map.class);
+
+                Map<String, Object> body = response.getBody();
+                if (body != null && body.containsKey("results")) {
+                    List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+
+                    if (results != null && !results.isEmpty()) {
+                        result.put(ticker, results.get(0));
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar dados em paralelo para " + ticker + ": " + e.getMessage());
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Cacheable(value = "fullStockData", key = "#ticker")
     public Map<String, Object> getFullStockData(String ticker) {
         System.out.println("Buscando dados completos da API externa para o ticker: " + ticker);
