@@ -37,6 +37,7 @@ public class SecurityConfig {
         return new JwtAuthFilter(jwtService, userDetailsService);
     }
 
+    @SuppressWarnings("null")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
