@@ -1,110 +1,165 @@
 <div align="center">
-   <a id="readme-top"></a>
-   <h3>Zuno - Consolidador de Investimentos</h3>
-   <p>Centralize sua vida financeira em uma única plataforma!</p>
+  <a id="readme-top"></a>
+  <h1>Zuno - Consolidador de Investimentos</h1>
+  <p>Plataforma em monorepo para centralizar carteiras de investimentos, calcular preço médio e custódias de renda variável e cripto, acompanhar proventos e emitir relatórios em PDF.</p>
 
-   <p>
-      <a href="https://github.com/ilanzgx/zuno-app"><strong>Explore a documentação »</strong></a>
-      <br />
-      <br />
-      <a href="https://github.com/ilanzgx/zuno-app/issues/new?labels=bug">Reportar Bug</a>
-      ·
-      <a href="https://github.com/ilanzgx/zuno-app/issues/new?labels=enhancement">Solicitar Feature</a>
-   </p>
+  <p>
+    <a href="https://github.com/ilanzgx/zuno-app/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ilanzgx/zuno-app/ci.yml?branch=main&label=CI&style=flat&color=3b82f6" alt="CI Status" /></a>
+    <a href="https://github.com/ilanzgx/zuno-app/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-3b82f6" alt="License: AGPL-3.0" /></a>
+    <a href="https://www.oracle.com/java/"><img src="https://img.shields.io/badge/java-21-3b82f6?logo=openjdk&logoColor=white" alt="Java 21" /></a>
+    <a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/spring_boot-3.5-3b82f6?logo=spring&logoColor=white" alt="Spring Boot 3" /></a>
+    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/next.js-16-3b82f6?logo=nextdotjs&logoColor=white" alt="Next.js 16" /></a>
+    <a href="https://react.dev/"><img src="https://img.shields.io/badge/react-19-3b82f6?logo=react&logoColor=white" alt="React 19" /></a>
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.13-3b82f6?logo=python&logoColor=white" alt="Python 3.13" /></a>
+    <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-17-3b82f6?logo=postgresql&logoColor=white" alt="PostgreSQL 17" /></a>
+  </p>
 </div>
 
----
+## Visao geral
 
-## 📌 Sobre o Projeto
+O Zuno reune ativos da B3 (acoes, FIIs, BDRs, ETFs) e criptomoedas em um unico painel. O sistema registra transacoes de compra e venda, calcula a posicao consolidada com base no custo medio ponderado, busca cotacoes e dividendos de mercado e gera relatorios operacionais.
 
-O **Zuno** é uma aplicação completa (monorepo) projetada para centralizar a vida financeira de um investidor. O objetivo é agregar dados de corretoras e bourses para fornecer uma visão holística e unificada do seu patrimônio.
+### O que o sistema faz
 
-### ✨ O que oferecemos?
-
-- **Visão em Tempo Real**: Desempenho do portfólio, análise de alocação de ativos e histórico de pagamentos de dividendos.
-- **Gestão Simplificada**: Interface limpa e minimalista com painéis e gráficos interativos.
-- **Market Data Isolado**: Microserviço dedicado (FastAPI) extraindo dados da B3 (Ações, FIIs) e Criptomoedas sob demanda.
-
----
-
-## 🛠️ Tecnologias
-
-### Web (Frontend)
-
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
-
-### API (Backend Core)
-
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
-
-### Market API (Data Microservice)
-
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)
+- **Consolidacao de carteira**: recalcula quantidade e preco medio a cada operacao registrada.
+- **Historico patrimonial**: gera graficos mensais de evolucao de patrimonio cruzando a quantidade em custodia com o historico de precos.
+- **Controle de dividendos**: mapeia eventos de proventos da B3 e calcula os valores recebidos a partir da data da primeira compra.
+- **Alocacao de ativos**: exibe a distribuicao percentual do portfolio por classe de ativo.
+- **Relatorios em PDF**: exporta o extrato consolidado da carteira via JasperReports.
+- **Market data isolado**: microservico dedicado em Python que consulta cotacoes, historico e proventos via yfinance.
 
 ---
 
-## 🏗️ Estrutura do Projeto
+## Arquitetura do sistema
 
-| Aplicação  | Escopo                                                                                        | Diretório      |
-| ---------- | --------------------------------------------------------------------------------------------- | -------------- |
-| **API**    | Backend transacional. Trata os usuários, carteiras, ativos (CRUD) e transações (Spring Boot). | `apps/api/`    |
-| **Market** | Microserviço proxy de dados em Python. Busca informações em tempo real via yfinance.          | `apps/market/` |
-| **Web**    | UI focada no usuário final e projeção de dados através de Server Components.                  | `apps/web/`    |
+O projeto é estruturado como monorepo dividindo núcleo transacional, microserviço de mercado e cliente web:
 
----
-
-## 🚀 Como Executar
-
-O projeto já contém os scripts necessários no diretório raiz para orquestrar todas as camadas do sistema de uma vez apenas.
-
-### Passo 1: Pré-requisitos
-
-- **Java 21+**, **Node.js 22+**, **Python 3.13+**
-- **Docker** para lidar com os serviços acessórios
-- **uv** instalado globalmente (`pip install uv`)
-
-### Passo 2: Clonando e configurando
-
-```bash
-git clone https://github.com/ilanzgx/zuno-app.git
-cd zuno-app
-
-# Instale as dependências unificadas de script (npm)
-npm install
-
-# Suba os containers locais
-docker-compose -d up
-
-# Crie as variáveis de ambiente em apps/api/.env e apps/web/.env.development
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env.development
+```
++-----------------------------------------------------------------------------+
+|                          apps/web (Next.js 16)                              |
+|             React 19, TypeScript, Tailwind CSS, Recharts                    |
++-----------------------------------------------------------------------------+
+                                       |
+                                       | HTTP REST / JSON
+                                       | Bearer JWT (HttpOnly Cookie via Server Actions)
+                                       v
++-----------------------------------------------------------------------------+
+|                          apps/api (Spring Boot 3)                           |
+|           Java 21, Spring Security, JPA/Hibernate, Flyway, JasperReports    |
++-----------------------------------------------------------------------------+
+           |                                                |
+           | HTTP interno                                   | HTTP externo
+           v                                                v
++------------------------------------+    +-----------------------------------+
+|    apps/market (FastAPI / Python)  |    |         Brapi External API        |
+|      yfinance, Pandas, uv          |    |     Cotações em tempo real        |
++------------------------------------+    +-----------------------------------+
+           |                                                |
+           +-----------------------+------------------------+
+                                   v
+                   +-------------------------------+
+                   |       Redis 7 (Cache L2)      |
+                   | TTL: 600s, Ticker/Quote keys  |
+                   +-------------------------------+
+                                   ^
+                                   | SQL (JDBC)
+                   +-------------------------------+
+                   |       PostgreSQL 17 DB        |
+                   |  Users, Positions, Transacts  |
+                   +-------------------------------+
 ```
 
-### Passo 3: Inicialização Concorrente
+### Divisão de responsabilidades
 
-Basta rodar o comando abaixo na raiz do repositório para inicializar o Next.js, o servidor Spring Boot e o Uvicorn do FastAPI:
+- **`apps/web` (Next.js 16, React 19, TypeScript)**: Interface do usuário construída com App Router, Tailwind CSS, Radix UI, Zustand para estado de sessão e Recharts para visualização gráfica.
+- **`apps/api` (Java 21, Spring Boot 3)**: Núcleo transacional e regras contábeis, persistência com Spring Data JPA, autenticação JWT e geração de PDFs com JasperReports.
+- **`apps/market` (Python 3.13, FastAPI)**: Microserviço responsável por consultar cotações e proventos da B3 e cripto via `yfinance`, servindo de proxy rápido para o backend Java.
+- **Infraestrutura**: PostgreSQL 17 para persistência relacional, Redis 7 para cache L2 de cotações e séries temporais, e pgAdmin 4 para gestão visual do banco.
 
-```bash
-npm run dev
+---
+
+## Estrutura do repositorio
+
+```
+consolidador-investimentos/
+├── apps/
+│   ├── api/                  # Backend principal (Spring Boot 3 / Java 21)
+│   │   ├── src/main/java/com/ilanzgx/demo/
+│   │   │   ├── config/       # Filtros de seguranca e configuracao JWT
+│   │   │   └── modules/      # Modulos isolados por dominio
+│   │   │       ├── auth/         # Login e registro de usuarios
+│   │   │       ├── dividend/     # Consulta e projecao de proventos
+│   │   │       ├── market/       # Integracao com microservico e cache Redis
+│   │   │       ├── portfolio/    # Resumo, alocacao e historico consolidado
+│   │   │       ├── position/     # Custodia e calculo de preco medio
+│   │   │       ├── report/       # Exportacao de relatorio em PDF
+│   │   │       ├── transaction/  # Registro de compras e vendas
+│   │   │       └── user/         # Perfil e dados de usuario
+│   │   └── src/main/resources/
+│   │       ├── application.yml
+│   │       └── reports/          # Template portfolio.jrxml
+│   │
+│   ├── market/               # Microservico de cotacoes (Python / FastAPI)
+│   │   ├── src/api/v1/       # Endpoints de cotacao, historico e noticias
+│   │   └── pyproject.toml
+│   │
+│   └── web/                  # Frontend (Next.js 16 / React 19)
+│       ├── src/app/          # Rotas publicas (/entrar, /registrar) e privadas
+│       ├── src/resources/    # Services e integracao com a API
+│       └── package.json
+│
+├── .docker/                  # Volumes persistentes de PostgreSQL e Redis
+├── docker-compose.yml        # PostgreSQL, Redis e pgAdmin
+├── pnpm-workspace.yaml       # Definicao do workspace monorepo
+├── Taskfile.yml              # Task runner para automacao local
+├── package.json              # Scripts e orquestracao do monorepo
+├── LOCAL_DEVELOPMENT.md      # Guia completo de setup e desenvolvimento local
+├── AGENTS.md                 # Contexto de arquitetura para agentes IA
+└── README.md
 ```
 
 ---
 
-## 🤝 Contribuindo
+## Stack tecnologica
 
-Se você tiver uma sugestão para melhorar o projeto, por favor faça um `fork` do repositório e crie um `pull request`. Você também pode simplesmente abrir uma `issue`!
-
-## 📝 Licença
-
-Lançado sob a **GNU Affero General Public License v3.0 (AGPLv3)** — [Ver detalhes](./LICENSE).
+| Camada | Tecnologias |
+| :--- | :--- |
+| **Frontend** | Next.js 16, React 19, TypeScript, Tailwind CSS, Radix UI, Zustand, Recharts |
+| **Backend API** | Java 21, Spring Boot 3, Spring Data JPA, Spring Security, JWT, JasperReports |
+| **Market Data** | Python 3.13, FastAPI, Uvicorn, yfinance, Pandas, uv |
+| **Gerenciamento** | pnpm workspaces, Taskfile (go-task) |
+| **Banco e Cache** | PostgreSQL 17, Redis 7 |
+| **Infraestrutura** | Docker, Docker Compose, pgAdmin 4 |
 
 ---
 
-<p align="center">Construído com ❤️ por <a href="https://github.com/ilanzgx">Ilan Fonseca</a></p>
+## Desenvolvimento local
+
+Instruções completas de configuração do ambiente, variáveis, execução de serviços (em conjunto ou isolados), testes e solução de problemas estão documentadas no:
+
+👉 [**Guia de Desenvolvimento Local (LOCAL_DEVELOPMENT.md)**](./LOCAL_DEVELOPMENT.md)
+
+---
+
+## Comandos disponiveis
+
+O monorepo pode ser operado via **Task** (`task`) ou via scripts do **pnpm**:
+
+| Acao | Via Task | Via pnpm |
+| :--- | :--- | :--- |
+| Iniciar aplicacoes em paralelo | `task dev` | `pnpm dev` |
+| Iniciar apenas o Web | `task dev:web` | `pnpm start:web` |
+| Iniciar apenas a API Java | `task dev:api` | `pnpm start:api` |
+| Iniciar apenas o Market Python | `task dev:market` | `pnpm start:market` |
+| Subir infraestrutura (Docker) | `task infra:up` | `docker compose up -d database redis pgadmin` |
+| Parar infraestrutura | `task infra:down` | `docker compose down` |
+| Executar testes da API Java | `task test:api` | `pnpm test:api` |
+| Executar testes do Market | `task test:market` | `pnpm test:market` |
+| Build do pacote da API | `task build:api` | `pnpm build:api` |
+| Build de producao do Web | `task build:web` | `pnpm build:web` |
+
+---
+
+## Licenca
+
+Projeto distribuido sob licenca AGPLv3. Veja o arquivo [LICENSE](./LICENSE) para mais detalhes.
