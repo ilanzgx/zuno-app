@@ -1,12 +1,15 @@
 {
   "name": "zuno-app",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "description": "Consolidador de Investimentos - Monorepo",
   "scripts": {
-    "dev": "concurrently -k \"npm run start:api\" \"npm run start:web\" \"npm run start:market\"",
-    "start:web": "cd apps/web && npm run dev",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"API,WEB,MARKET\" -c \"bgBlue.bold,bgCyan.bold,bgGreen.bold\" \"pnpm run start:api\" \"pnpm run start:web\" \"pnpm run start:market\"",
+    "start:web": "pnpm --filter @consolidador-investimentos/web dev",
     "start:api": "cd apps/api && mvnw spring-boot:run",
-    "start:market": "cd apps/market && uv run uvicorn src.main:app --reload",
+    "start:market": "uv run --directory apps/market uvicorn src.main:app --reload",
+    "infra:up": "docker compose up -d database redis pgadmin",
+    "infra:down": "docker compose down",
     "maven:resolve": "cd apps/api && mvnw dependency:resolve",
     "maven:build": "cd apps/api && mvnw clean install -DskipTests",
     "maven:list": "cd apps/api && mvnw dependency:tree"
@@ -15,7 +18,7 @@
   "author": "ilanzgx",
   "license": "ISC",
   "type": "commonjs",
-  "dependencies": {
+  "devDependencies": {
     "concurrently": "^9.2.1"
   }
 }

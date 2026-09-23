@@ -1,0 +1,106 @@
+version: '3'
+
+# Para ver a lista de tarefas disponiveis, rode: task (ou task -l)
+
+tasks:
+  default:
+    desc: Lista os comandos disponiveis no projeto
+    silent: true
+    cmds:
+      - task --list
+
+  # Infraestrutura local
+  infra:up:
+    desc: Sobe os containers de banco e cache (Postgres, Redis e pgAdmin)
+    cmds:
+      - docker compose up -d database redis pgadmin
+
+  infra:down:
+    desc: Para os containers de infraestrutura
+    cmds:
+      - docker compose down
+
+  infra:logs:
+    desc: Exibe os logs dos containers em tempo real
+    cmds:
+      - docker compose logs -f
+
+  # Servicos em desenvolvimento
+  dev:
+    desc: Roda os tres servicos (API, Web e Market) juntos
+    cmds:
+      - pnpm run dev
+
+  dev:web:
+    desc: Inicia apenas o frontend Next.js
+    cmds:
+      - pnpm --filter @consolidador-investimentos/web dev
+
+  dev:api:
+    desc: Inicia apenas o backend Spring Boot
+    dir: apps/api
+    cmds:
+      - cmd: ./mvnw spring-boot:run
+        platforms: [linux, darwin]
+      - cmd: .\mvnw.cmd spring-boot:run
+        platforms: [windows]
+
+  dev:market:
+    desc: Inicia apenas o servico de mercado em Python
+    dir: apps/market
+    cmds:
+      - uv run uvicorn src.main:app --reload --port 8000
+
+  # Testes
+  test:api:
+    desc: Roda os testes da API Java
+    dir: apps/api
+    cmds:
+      - cmd: ./mvnw test
+        platforms: [linux, darwin]
+      - cmd: .\mvnw.cmd test
+        platforms: [windows]
+
+  test:market:
+    desc: Roda os testes do servico Python
+    dir: apps/market
+    cmds:
+      - uv run pytest
+
+  test:all:
+    desc: Executa a suite de testes de todas as aplicacoes
+    cmds:
+      - task: test:api
+      - task: test:market
+
+  # Compilacao e build
+  build:web:
+    desc: Compila o frontend Next.js para producao
+    cmds:
+      - pnpm --filter @consolidador-investimentos/web build
+
+  build:api:
+    desc: Compila a API Java e gera o arquivo JAR
+    dir: apps/api
+    cmds:
+      - cmd: ./mvnw clean package -DskipTests
+        platforms: [linux, darwin]
+      - cmd: .\mvnw.cmd clean package -DskipTests
+        platforms: [windows]
+
+  build:all:
+    desc: Executa o build de producao da API e do frontend
+    cmds:
+      - task: build:api
+      - task: build:web
+
+  # Limpeza
+  clean:
+    desc: Limpa pastas de build e caches locais
+    cmds:
+      - cmd: ./apps/api/mvnw clean
+        platforms: [linux, darwin]
+      - cmd: .\apps\api\mvnw.cmd clean
+        platforms: [windows]
+      - cmd: rimraf apps/web/.next node_modules/.cache
+        ignore_error: true
