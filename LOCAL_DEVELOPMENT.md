@@ -149,13 +149,18 @@ Disponível em: `http://localhost:8000`
 
 ```bash
 # Executar todos os testes do monorepo
-task test:all
+task test
+# ou: task test:all / pnpm test
 
-# Apenas os testes unitários da API Java
+# Testes da API Java (Spring Boot)
 task test:api
+# Para filtrar uma classe de teste específica:
+task test:api -- -Dtest=MarketServiceImplTest
 
-# Apenas os testes do microserviço Python
+# Testes do microserviço Python (pytest)
 task test:market
+# Para filtrar testes específicos no pytest:
+task test:market -- -k test_b3_quote
 ```
 
 ### Compilação e Build de Produção

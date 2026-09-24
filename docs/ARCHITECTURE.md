@@ -450,18 +450,19 @@ A automação das rotinas locais é padronizada no arquivo `Taskfile.yml`:
 | `task dev:api` | Roda apenas o backend Spring Boot | `mvnw spring-boot:run` |
 | `task dev:market`| Roda apenas o microserviço FastAPI | `uv run uvicorn src.main:app --reload` |
 | `task dev:web` | Roda apenas o frontend Next.js | `pnpm --filter @consolidador-investimentos/web dev` |
-| `task test:api` | Roda testes unitários da API Java | `mvnw test` |
-| `task test:market`| Roda testes unitários do Python | `uv run pytest` |
+| `task test` | Executa todas as suítes de teste (alias para `test:all`) | `task test:all` |
 | `task test:all` | Roda os testes de todas as aplicações | `task test:api` e `task test:market` |
+| `task test:api` | Roda testes unitários da API Java | `mvnw test` (aceita `-- -Dtest=...`) |
+| `task test:market`| Roda testes unitários do Python | `uv run pytest` (aceita `-- -k ...`) |
 | `task build:all` | Compila o JAR do backend e o Next.js | `task build:api` e `task build:web` |
 
 ---
 
 ## 10. Decisões Arquiteturais, Débitos Técnicos e Trade-offs
 
-1. **Chamadas em Lote com `parallelStream()` no Spring Boot:**
-   - *Como funciona:* Ao calcular o resumo patrimonial, o método `MarketServiceImpl.getBulkStockData` itera pelos tickers utilizando streams paralelas do Java para consultar a API da Brapi.
-   - *Trade-off:* Para carteiras comuns (10 a 30 ativos), essa abordagem é rápida e evita adicionar a complexidade de clientes reativos como o WebClient do Spring WebFlux. No entanto, o `parallelStream` compartilha a thread pool padrão da JVM (`ForkJoinPool.commonPool()`). Em cenários de alta concorrência de usuários simultâneos, isso pode saturar a pool de threads de processamento da aplicação.
+1. **Chamadas em Lote com Virtual Threads (Project Loom) no Spring Boot:**
+   - *Como funciona:* Ao calcular o resumo patrimonial, o método `MarketServiceImpl.getBulkStockData` dispara requisições concorrentes assíncronas utilizando um executor dedicado baseado em Virtual Threads (`Executors.newVirtualThreadPerTaskExecutor()`) combinado com `CompletableFuture`.
+   - *Benefício:* Elimina o gargalo do antigo `parallelStream()` (que compartilhava e saturava o `ForkJoinPool.commonPool()`). Cada chamada de I/O de rede é executada em uma thread virtual leve do Java 21, mantendo alto throughput sem bloquear threads de plataforma da JVM. A chave de cache também foi padronizada com `TreeSet` ordenado para garantir determinismo.
 2. **Dependência de Web Scraping via `yfinance`:**
    - *Como funciona:* O microserviço Python consulta o Yahoo Finance para obter séries históricas e dividendos sem custo de licenciamento.
    - *Trade-off:* APIs proprietárias da B3 têm custo elevado para projetos independentes. A biblioteca `yfinance` resolve a necessidade imediata de dados com facilidade, mas não oferece garantias de SLA e pode sofrer instabilidade ou bloqueios temporários de IP caso o volume de requisições aumente. O cache de 10 minutos no Redis atenua esse risco.

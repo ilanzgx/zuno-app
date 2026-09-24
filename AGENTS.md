@@ -18,7 +18,6 @@ The platform solves the fragmentation of managing investments across multiple br
 
 - **ALMOST NEVER write comments.** We're senior engineers here, not learners.
 - **NEVER run the backend or frontend manually.** The human is already running dev servers.
-- **ALWAYS test backend changes** by writing unit or end-to-end tests.
 - **ALWAYS test frontend changes** by running Playwright MCP.
 - **ALWAYS keep [`docs/architecture.md`](docs/architecture.md) updated** whenever adding or changing endpoints, database schemas, cache keys, external integrations, or deployment configs.
 
@@ -62,9 +61,10 @@ The project uses Taskfile with pnpm script fallbacks:
 | `task infra:up` | Boots Postgres, Redis, and pgAdmin (`docker compose up -d database redis pgadmin`) |
 | `task infra:down` | Stops backing containers (`docker compose down`) |
 | `task infra:logs` | Streams container logs (`docker compose logs -f`) |
-| `task test:api` | Runs Java unit tests (`apps/api/mvnw.cmd test`) |
-| `task test:market` | Runs Python pytest suite (`cd apps/market && uv run pytest`) |
+| `task test` | Runs all test suites (`task test:all` or `pnpm test`) |
 | `task test:all` | Runs all test suites |
+| `task test:api` | Runs Java unit tests (flags: `task test:api -- -Dtest=<Class>`) |
+| `task test:market` | Runs Python pytest suite (flags: `task test:market -- -k <filter>`) |
 | `task build:api` | Packages backend JAR (`apps/api/mvnw.cmd clean package -DskipTests`) |
 | `task build:web` | Builds Next.js production bundle |
 

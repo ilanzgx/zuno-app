@@ -4,6 +4,10 @@ server:
   shutdown: graceful
 
 spring:
+  threads:
+    virtual:
+      enabled: true
+
   config:
     import: optional:file:.env[.properties]
 

@@ -3,6 +3,10 @@ package com.ilanzgx.demo.modules.market.application;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -12,11 +16,14 @@ import org.springframework.stereotype.Service;
 import com.ilanzgx.demo.modules.shared.domain.HttpFetch;
 import com.ilanzgx.demo.modules.market.domain.MarketService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MarketServiceImpl implements MarketService {
     private final HttpFetch httpFetch;
+    private final Executor virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
     @Value("${BRAPI_URL}")
     private String apiUrl;
@@ -31,7 +38,7 @@ public class MarketServiceImpl implements MarketService {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Cacheable(value = "simpleStockData", key = "#ticker")
     public Map<String, Object> getSimpleStockData(String ticker) {
-        System.out.println("Buscando dados simples da API externa para o ticker: " + ticker);
+        log.info("Fetching simple stock data for ticker: {}", ticker);
 
         try {
             ResponseEntity<Map> response = httpFetch.get(
@@ -43,7 +50,7 @@ public class MarketServiceImpl implements MarketService {
 
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar dados para o ticker " + ticker + ": " + e.getMessage());
+            log.error("Error fetching simple stock data for ticker {}: {}", ticker, e.getMessage());
             return Map.of(
                 "error", true,
                 "message", "Dado indisponível no momento",
@@ -54,37 +61,41 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Cacheable(value = "bulkStockData", key = "#tickers.hashCode()")
+    @Cacheable(value = "bulkStockData", key = "T(java.lang.String).join(',', new java.util.TreeSet(#tickers))")
     public Map<String, Map<String, Object>> getBulkStockData(Set<String> tickers) {
-        System.out.println("Buscando dados em lote (paralelo) para tickers: " + tickers);
+        log.info("Fetching bulk stock data via virtual threads for tickers: {}", tickers);
 
-        Map<String, Map<String, Object>> result = new java.util.concurrent.ConcurrentHashMap<>();
+        Map<String, Map<String, Object>> result = new ConcurrentHashMap<>();
 
         if (tickers == null || tickers.isEmpty()) {
             return result;
         }
 
-        tickers.parallelStream().forEach(ticker -> {
-            try {
-                ResponseEntity<Map> response = httpFetch.get(
-                        this.apiUrl + "/api/quote/" + ticker,
-                        Map.of(
-                                "Authorization", "Bearer " + this.apiToken,
-                                "Accept", "application/json"),
-                        Map.class);
+        List<CompletableFuture<Void>> futures = tickers.stream()
+                .map(ticker -> CompletableFuture.runAsync(() -> {
+                    try {
+                        ResponseEntity<Map> response = httpFetch.get(
+                                this.apiUrl + "/api/quote/" + ticker,
+                                Map.of(
+                                        "Authorization", "Bearer " + this.apiToken,
+                                        "Accept", "application/json"),
+                                Map.class);
 
-                Map<String, Object> body = response.getBody();
-                if (body != null && body.containsKey("results")) {
-                    List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+                        Map<String, Object> body = response.getBody();
+                        if (body != null && body.containsKey("results")) {
+                            List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
 
-                    if (results != null && !results.isEmpty()) {
-                        result.put(ticker, results.get(0));
+                            if (results != null && !results.isEmpty()) {
+                                result.put(ticker, results.get(0));
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("Error fetching stock data for {}: {}", ticker, e.getMessage());
                     }
-                }
-            } catch (Exception e) {
-                System.err.println("Erro ao buscar dados em paralelo para " + ticker + ": " + e.getMessage());
-            }
-        });
+                }, virtualThreadExecutor))
+                .toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         return result;
     }
@@ -93,7 +104,7 @@ public class MarketServiceImpl implements MarketService {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Cacheable(value = "fullStockData", key = "#ticker")
     public Map<String, Object> getFullStockData(String ticker) {
-        System.out.println("Buscando dados completos da API externa para o ticker: " + ticker);
+        log.info("Fetching full stock data for ticker: {}", ticker);
 
         try {
             ResponseEntity<Map> response = httpFetch.get(
@@ -105,7 +116,7 @@ public class MarketServiceImpl implements MarketService {
 
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar dados completos para o ticker " + ticker + ": " + e.getMessage());
+            log.error("Error fetching full stock data for ticker {}: {}", ticker, e.getMessage());
             return Map.of(
                     "error", true,
                     "message", "Dado indisponível no momento",
@@ -113,13 +124,11 @@ public class MarketServiceImpl implements MarketService {
         }
     }
 
-    /* Métodos do meu microserviço */
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Cacheable(value = "stockDividendsData", key = "#ticker + '_' + #fromDate")
     public Map<String, Object> getStockDividendsData(String ticker, String fromDate) {
-        System.out.println("Buscando dados de dividendos através do microserviço para o ticker: " + ticker
-                + " a partir de: " + fromDate);
+        log.info("Fetching dividends data for ticker: {} from date: {}", ticker, fromDate);
 
         try {
             String url = this.marketMicroserviceUrl + "/b3/dividends/" + ticker;
@@ -134,7 +143,7 @@ public class MarketServiceImpl implements MarketService {
 
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar dados completos para o ticker " + ticker + ": " + e.getMessage());
+            log.error("Error fetching dividends data for ticker {}: {}", ticker, e.getMessage());
             return Map.of(
                     "error", true,
                     "message", "Dado indisponível no momento",
@@ -155,7 +164,7 @@ public class MarketServiceImpl implements MarketService {
                     Map.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar preço histórico: " + e.getMessage());
+            log.error("Error fetching historical price for {}: {}", ticker, e.getMessage());
             return Map.of("error", "Preço não encontrado para a data");
         }
     }
@@ -173,7 +182,7 @@ public class MarketServiceImpl implements MarketService {
                     Map.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar preço atual: " + e.getMessage());
+            log.error("Error fetching current price for {}: {}", ticker, e.getMessage());
             return Map.of("error", "Preço não encontrado");
         }
     }
@@ -191,7 +200,7 @@ public class MarketServiceImpl implements MarketService {
                     Map.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar notícias: " + e.getMessage());
+            log.error("Error fetching news for {}: {}", ticker, e.getMessage());
             return Map.of("error", "Notícias não encontradas");
         }
     }
@@ -208,14 +217,14 @@ public class MarketServiceImpl implements MarketService {
             }
             return List.of();
         } catch (Exception e) {
-            System.err.println("Erro ao buscar histórico: " + e.getMessage());
+            log.error("Error fetching history for {}: {}", ticker, e.getMessage());
             return List.of();
         }
     }
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Cacheable(value = "stockHistoryMultiple", key = "#tickers.hashCode()")
+    @Cacheable(value = "stockHistoryMultiple", key = "T(java.lang.String).join(',', new java.util.TreeSet(#tickers))")
     public Map<String, List<Map<String, Object>>> getStockHistoryForTickers(Set<String> tickers) {
         Map<String, List<Map<String, Object>>> result = new java.util.HashMap<>();
 
@@ -241,9 +250,8 @@ public class MarketServiceImpl implements MarketService {
 
             return result;
         } catch (Exception e) {
-            System.err.println("Erro ao buscar histórico para múltiplos tickers: " + e.getMessage());
+            log.error("Error fetching history for multiple tickers: {}", e.getMessage());
             return result;
         }
     }
 }
-

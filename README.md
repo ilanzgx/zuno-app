@@ -153,6 +153,7 @@ O monorepo pode ser operado via **Task** (`task`) ou via scripts do **pnpm**:
 | Iniciar apenas o Market Python | `task dev:market` | `pnpm start:market` |
 | Subir infraestrutura (Docker) | `task infra:up` | `docker compose up -d database redis pgadmin` |
 | Parar infraestrutura | `task infra:down` | `docker compose down` |
+| Executar todos os testes | `task test` (ou `task test:all`) | `pnpm test` (ou `pnpm test:all`) |
 | Executar testes da API Java | `task test:api` | `pnpm test:api` |
 | Executar testes do Market | `task test:market` | `pnpm test:market` |
 | Build do pacote da API | `task build:api` | `pnpm build:api` |

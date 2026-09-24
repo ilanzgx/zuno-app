@@ -42,7 +42,7 @@ tasks:
     cmds:
       - cmd: ./mvnw spring-boot:run
         platforms: [linux, darwin]
-      - cmd: .\mvnw.cmd spring-boot:run
+      - cmd: cmd.exe /c mvnw.cmd spring-boot:run
         platforms: [windows]
 
   dev:market:
@@ -52,26 +52,31 @@ tasks:
       - uv run uvicorn src.main:app --reload --port 8000
 
   # Testes
-  test:api:
-    desc: Roda os testes da API Java
-    dir: apps/api
+  test:
+    desc: Executa todas as suites de teste do monorepo (alias para test:all)
     cmds:
-      - cmd: ./mvnw test
-        platforms: [linux, darwin]
-      - cmd: .\mvnw.cmd test
-        platforms: [windows]
-
-  test:market:
-    desc: Roda os testes do servico Python
-    dir: apps/market
-    cmds:
-      - uv run pytest
+      - task: test:all
 
   test:all:
     desc: Executa a suite de testes de todas as aplicacoes
     cmds:
       - task: test:api
       - task: test:market
+
+  test:api:
+    desc: "Roda os testes da API Java (aceita flags via --, ex: task test:api -- -Dtest=MarketServiceImplTest)"
+    dir: apps/api
+    cmds:
+      - cmd: ./mvnw test {{.CLI_ARGS}}
+        platforms: [linux, darwin]
+      - cmd: cmd.exe /c mvnw.cmd test {{.CLI_ARGS}}
+        platforms: [windows]
+
+  test:market:
+    desc: "Roda os testes do servico Python via pytest (aceita flags via --, ex: task test:market -- -k test_b3)"
+    dir: apps/market
+    cmds:
+      - uv run pytest {{.CLI_ARGS}}
 
   # Compilacao e build
   build:web:
@@ -85,7 +90,7 @@ tasks:
     cmds:
       - cmd: ./mvnw clean package -DskipTests
         platforms: [linux, darwin]
-      - cmd: .\mvnw.cmd clean package -DskipTests
+      - cmd: cmd.exe /c mvnw.cmd clean package -DskipTests
         platforms: [windows]
 
   build:all:
@@ -100,7 +105,7 @@ tasks:
     cmds:
       - cmd: ./apps/api/mvnw clean
         platforms: [linux, darwin]
-      - cmd: .\apps\api\mvnw.cmd clean
+      - cmd: cmd.exe /c "cd apps\api && mvnw.cmd clean"
         platforms: [windows]
       - cmd: rimraf apps/web/.next node_modules/.cache
         ignore_error: true
